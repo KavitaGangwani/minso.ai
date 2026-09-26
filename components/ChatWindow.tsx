@@ -63,16 +63,28 @@ export default function ChatWindow({ agent }: { agent: Agent }) {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      const contentType = response.headers.get('content-type') || '';
+      
+      if (contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+        } catch {
+          data = { error: 'Invalid JSON received from server.' };
+        }
+      } else {
+        const textError = await response.text();
+        data = { error: response.ok ? textError : `Server error (${response.status}): ${response.statusText || 'Function execution failed'}` };
+      }
 
-      if (!response.ok || data.error) {
+      if (!response.ok || data?.error) {
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === typingMessageId
               ? {
                   id: 'reply-' + Date.now(),
                   sender: 'assistant',
-                  text: data.error || 'Failed to get answer. Please try again.',
+                  text: data?.error || 'Failed to get answer. Please try again.',
                   isError: true,
                 }
               : msg
@@ -85,8 +97,8 @@ export default function ChatWindow({ agent }: { agent: Agent }) {
               ? {
                   id: 'reply-' + Date.now(),
                   sender: 'assistant',
-                  text: data.answer,
-                  citations: data.sources,
+                  text: data.answer || 'I could not find this in my documents.',
+                  citations: data.sources || [],
                 }
               : msg
           )
