@@ -1,30 +1,35 @@
-import { pipeline, env, FeatureExtractionPipeline } from '@huggingface/transformers';
-
-// Set transformers environment options
-env.allowLocalModels = false;
-
+// Singleton pipeline holder
 declare global {
   // eslint-disable-next-line no-var
-  var __transformersPipelinePromise: Promise<FeatureExtractionPipeline> | undefined;
+  var __transformersPipelinePromise: Promise<any> | undefined;
 }
 
-// Singleton pipeline loader for multilingual embedding model (stored on globalThis)
-export async function getExtractor(): Promise<FeatureExtractionPipeline | null> {
+// Singleton pipeline loader for multilingual embedding model (dynamic import for serverless resilience)
+export async function getExtractor(): Promise<any | null> {
   const isInitial = !globalThis.__transformersPipelinePromise;
   const start = performance.now();
 
   try {
     if (!globalThis.__transformersPipelinePromise) {
-      globalThis.__transformersPipelinePromise = pipeline(
-        'feature-extraction',
-        'Xenova/multilingual-e5-small',
-        {
-          dtype: 'q8',
+      globalThis.__transformersPipelinePromise = (async () => {
+        try {
+          const { pipeline, env } = await import('@huggingface/transformers');
+          if (env) {
+            env.allowLocalModels = false;
+          }
+          return await pipeline('feature-extraction', 'Xenova/multilingual-e5-small', {
+            dtype: 'q8',
+          });
+        } catch (err: any) {
+          console.warn('[Embedding] Transformers initialization unavailable in this environment:', err?.message || err);
+          return null;
         }
-      );
+      })();
     }
 
     const extractor = await globalThis.__transformersPipelinePromise;
+    if (!extractor) return null;
+
     const duration = (performance.now() - start).toFixed(2);
     console.log(
       `[Timing] 1. Embedding model ready (${duration}ms${
@@ -33,7 +38,7 @@ export async function getExtractor(): Promise<FeatureExtractionPipeline | null> 
     );
     return extractor;
   } catch (err: any) {
-    console.warn('[Embedding] HuggingFace model download unavailable on this network:', err.message);
+    console.warn('[Embedding] HuggingFace model download unavailable:', err?.message || err);
     globalThis.__transformersPipelinePromise = undefined;
     return null;
   }

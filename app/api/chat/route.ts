@@ -3,6 +3,7 @@ import { getAgent } from '@/lib/agents';
 import { processClientQuery } from '@/lib/clients';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 45;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
