@@ -899,7 +899,7 @@ export default function ClientDashboardClient({
               </p>
               <pre className="code-block-preview">
 {`// Client Website API Service (src/services/agentApi.js)
-const MINSO_API_URL = 'http://localhost:3000/api/chat';
+const MINSO_API_URL = '${typeof window !== 'undefined' ? window.location.origin : 'https://minso.ai'}/api/chat';
 
 export async function askMiningAgent(question) {
   const response = await fetch(MINSO_API_URL, {
@@ -913,7 +913,7 @@ export async function askMiningAgent(question) {
       agentId: '${selectedClientObj?.agentId || 'rajasthan-mining-law'}',
       question: question,
       clientId: '${selectedClientObj?.id || 'client-account-id'}',
-      clientDomain: '${selectedClientObj?.domain || 'http://localhost:5173'}',
+      clientDomain: '${selectedClientObj?.domain || 'https://client-portal.com'}',
     }),
   });
 
@@ -938,7 +938,7 @@ export async function askMiningAgent(question) {
               </p>
               <pre className="code-block-preview">
 {`<script 
-  src="https://minso.ai/embed.js" 
+  src="${typeof window !== 'undefined' ? window.location.origin : 'https://minso.ai'}/embed.js" 
   data-agent="${selectedClientObj?.agentId || 'rajasthan-mining-law'}"
   data-client-id="${selectedClientObj?.id || 'client-account-id'}"
   data-client-key="${selectedClientObj?.apiKey || 'minso_live_sec_key'}"

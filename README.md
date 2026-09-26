@@ -8,13 +8,17 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pgvector_384d-336791?style=for-the-badge&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Supabase](https://img.shields.io/badge/Database-Supabase-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![LLM](https://img.shields.io/badge/LLM-Gemini_2.5_Flash-orange?style=for-the-badge&logo=google)](https://openrouter.ai/)
-[![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)](LICENSE)
+[![Live Deployment](https://img.shields.io/badge/Live_App-minso.ai-success?style=for-the-badge&logo=vercel)](https://minso.ai)
 
 <p align="center">
   <b>Eliminating Hallucinations in High-Stakes Mining Law, DGMS Safety SOPs & Regulatory Concessions.</b>
 </p>
 
-[Explore User Portal](#-public-user-portal) • [Hidden Admin Gateway](#-the-discreet-lock-icon-hidden-admin-gateway) • [Admin Modules](#-complete-admin-control-center-modules) • [RAG Engine](#-rag-pipeline--vector-grounding-architecture) • [API & SDK](#-client-integration-sdk--embeds)
+<p align="center">
+  🌐 <b>Production App:</b> <a href="https://minso.ai">https://minso.ai</a> &nbsp;|&nbsp; 📡 <b>Live RAG API:</b> <code>https://minso.ai/api/chat</code>
+</p>
+
+[Live Deployment](#-live-deployment--production-endpoints) • [Explore User Portal](#-public-user-portal) • [Hidden Admin Gateway](#-the-discreet-lock-icon-hidden-admin-gateway) • [Admin Modules](#-complete-admin-control-center-modules) • [API & SDK](#-client-integration-sdk--embeds)
 
 ---
 
@@ -22,6 +26,7 @@
 
 ## 📑 Table of Contents
 
+- [🌐 Live Deployment & Production Endpoints](#-live-deployment--production-endpoints)
 - [🏛️ Executive Architecture Overview](#️-executive-architecture-overview)
 - [🌐 Public User Portal](#-public-user-portal)
 - [🔐 The Discreet Lock Icon (Hidden Admin Gateway)](#-the-discreet-lock-icon-hidden-admin-gateway)
@@ -37,6 +42,18 @@
 - [📦 Client Integration SDK & Embeds](#-client-integration-sdk--embeds)
 - [⚙️ Environment Configuration & Schema](#️-environment-configuration--schema)
 - [🚀 Quick Start & Local Setup](#-quick-start--local-setup)
+
+---
+
+## 🌐 Live Deployment & Production Endpoints
+
+| Resource | URL | Purpose / Usage |
+| :--- | :--- | :--- |
+| **Production Website** | [https://minso.ai](https://minso.ai) | Public platform, Statutory Grounding Simulator & Chat Assistants |
+| **Administrative Console** | [https://minso.ai/admin](https://minso.ai/admin) | Secret portal accessible via footer lock `[ 🔒 ]` with Passcode |
+| **Inference Chat API** | `https://minso.ai/api/chat` | External REST endpoint for custom client integrations & webhooks |
+| **Embeddable Web Widget** | `https://minso.ai/embed.js` | Drop-in JavaScript widget for enterprise client websites |
+| **GitHub Repository** | [github.com/KavitaGangwani/minso.ai](https://github.com/KavitaGangwani/minso.ai) | Official open-source repository |
 
 ---
 
@@ -327,7 +344,7 @@ ADMIN_SECRET_KEY=your-secure-admin-passcode
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/your-org/minso.ai.git
+git clone https://github.com/KavitaGangwani/minso.ai.git
 cd minso.ai
 npm install
 ```
