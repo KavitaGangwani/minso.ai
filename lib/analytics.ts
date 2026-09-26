@@ -117,9 +117,17 @@ export async function getChunkAnalytics(agentId?: string): Promise<ChunkAnalytic
 // Get recent query logs with agent name - strictly sorted newest first (created_at DESC)
 export async function getAllQueryLogs(limit: number = 50): Promise<QueryLog[]> {
   let agentMap = new Map<string, string>();
+  let clientMap = new Map<string, string>();
+
   try {
-    const agents = await getAllAgents();
+    const [agents, { data: clients }] = await Promise.all([
+      getAllAgents(),
+      supabase.from('clients').select('id, name'),
+    ]);
     agentMap = new Map(agents.map((a) => [a.id, a.name]));
+    if (clients) {
+      clientMap = new Map(clients.map((c: any) => [c.id, c.name]));
+    }
   } catch (e) {
     // Non-fatal, will fallback to agent_id
   }
@@ -133,36 +141,56 @@ export async function getAllQueryLogs(limit: number = 50): Promise<QueryLog[]> {
       .limit(limit);
 
     if (!error && data) {
-      dbLogs = data.map((row: any) => ({
-        id: Number(row.id),
-        agent_id: row.agent_id,
-        agent_name: agentMap.get(row.agent_id) || row.agent_id,
-        question: row.question,
-        answer: row.answer,
-        sources_count: Number(row.sources_count || 0),
-        chunks_retrieved: Number(row.chunks_retrieved || 0),
-        retrieval_ms: Number(row.retrieval_ms || 0),
-        llm_ms: Number(row.llm_ms || 0),
-        total_ms: Number(row.total_ms || 0),
-        created_at: row.created_at,
-      }));
+      dbLogs = data.map((row: any) => {
+        const rawQ = typeof row.question === 'string' ? row.question : '';
+        const clientMatch = rawQ.match(/^\[client:([^\]]+)\]/);
+        const clientId = row.client_id || (clientMatch ? clientMatch[1] : null);
+        const cleanQuestion = clientMatch ? rawQ.replace(/^\[client:[^\]]+\]\s*/, '') : rawQ;
+        const clientName = clientId ? (clientMap.get(clientId) || clientId) : undefined;
+
+        return {
+          id: Number(row.id),
+          agent_id: row.agent_id,
+          agent_name: agentMap.get(row.agent_id) || row.agent_id,
+          client_id: clientId || undefined,
+          client_name: clientName,
+          question: cleanQuestion,
+          answer: row.answer,
+          sources_count: Number(row.sources_count || 0),
+          chunks_retrieved: Number(row.chunks_retrieved || 0),
+          retrieval_ms: Number(row.retrieval_ms || 0),
+          llm_ms: Number(row.llm_ms || 0),
+          total_ms: Number(row.total_ms || 0),
+          created_at: row.created_at,
+        };
+      });
     }
   } catch (err) {
     console.error('[Analytics] Failed to fetch query logs from DB:', err);
   }
 
   // Merge in-memory logs with DB logs
-  const inMemWithNames = IN_MEMORY_LOGS.map((l) => ({
-    ...l,
-    agent_name: agentMap.get(l.agent_id) || l.agent_id,
-  }));
+  const inMemWithNames = IN_MEMORY_LOGS.map((l) => {
+    const rawQ = typeof l.question === 'string' ? l.question : '';
+    const clientMatch = rawQ.match(/^\[client:([^\]]+)\]/);
+    const clientId = l.client_id || (clientMatch ? clientMatch[1] : null);
+    const cleanQuestion = clientMatch ? rawQ.replace(/^\[client:[^\]]+\]\s*/, '') : rawQ;
+
+    return {
+      ...l,
+      agent_name: agentMap.get(l.agent_id) || l.agent_id,
+      client_id: clientId || undefined,
+      client_name: clientId ? (clientMap.get(clientId) || clientId) : undefined,
+      question: cleanQuestion,
+    };
+  });
 
   const allLogs = [...inMemWithNames, ...dbLogs];
-  // Deduplicate by question + created_at
+  // Deduplicate by agent_id + question + answer
   const seen = new Set<string>();
   const merged: QueryLog[] = [];
   for (const log of allLogs) {
-    const key = `${log.agent_id}::${log.question}::${log.answer.slice(0, 40)}`;
+    const key = `${log.agent_id}::${log.question}::${log.created_at}`;
     if (!seen.has(key)) {
       seen.add(key);
       merged.push(log);

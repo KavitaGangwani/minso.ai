@@ -102,6 +102,20 @@ export default async function QuestionsLogsPage() {
                   >
                     {log.agent_name || log.agent_id}
                   </Link>
+
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                      fontWeight: 600,
+                      background: log.client_name ? 'rgba(104, 181, 255, 0.12)' : 'rgba(255, 184, 0, 0.1)',
+                      color: log.client_name ? '#68B5FF' : 'var(--amber)',
+                      border: log.client_name ? '1px solid rgba(104, 181, 255, 0.3)' : '1px solid rgba(255, 184, 0, 0.3)',
+                    }}
+                  >
+                    {log.client_name ? `🏢 Client: ${log.client_name}` : '🌐 Main Website'}
+                  </span>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', fontSize: '12px' }}>

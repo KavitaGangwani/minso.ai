@@ -64,6 +64,8 @@ export interface QueryLog {
   id: number;
   agent_id: string;
   agent_name?: string;
+  client_id?: string;
+  client_name?: string;
   question: string;
   answer: string;
   sources_count: number;

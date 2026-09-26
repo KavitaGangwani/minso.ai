@@ -240,6 +240,7 @@ export default async function AnalyticsDashboardPage() {
           <thead>
             <tr>
               <th>Question</th>
+              <th>Origin</th>
               <th>Agent</th>
               <th>Retrieval Time</th>
               <th>LLM Generation</th>
@@ -251,7 +252,23 @@ export default async function AnalyticsDashboardPage() {
           <tbody>
             {analytics.recentLogs.slice(0, 8).map((log) => (
               <tr key={log.id}>
-                <td style={{ fontWeight: 500, maxWidth: '300px' }}>{log.question}</td>
+                <td style={{ fontWeight: 500, maxWidth: '280px' }}>{log.question}</td>
+                <td>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                      fontWeight: 600,
+                      background: log.client_name ? 'rgba(104, 181, 255, 0.12)' : 'rgba(255, 184, 0, 0.1)',
+                      color: log.client_name ? '#68B5FF' : 'var(--amber)',
+                      border: log.client_name ? '1px solid rgba(104, 181, 255, 0.3)' : '1px solid rgba(255, 184, 0, 0.3)',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {log.client_name ? `🏢 ${log.client_name}` : '🌐 Main Site'}
+                  </span>
+                </td>
                 <td style={{ color: 'var(--mute)', fontSize: '13px' }}>{log.agent_name || log.agent_id}</td>
                 <td style={{ color: 'var(--mute)' }}>{Math.round(log.retrieval_ms)}ms</td>
                 <td style={{ color: 'var(--mute)' }}>{Math.round(log.llm_ms)}ms</td>

@@ -38,14 +38,14 @@ function getAgentGreetingResponse(agent: Agent): string {
 
 function buildNotFoundResponse(agent: Agent, query: string): string {
   if (agent.id === 'rajasthan-mining-law') {
-    return `I could not find a specific statutory clause covering this inquiry in the currently ingested **Rajasthan Minor Mineral Concession Rules (RMMCR 2017)** or **MMDR Act 1957** records.\n\n💡 **Suggested searches:**\n• **Specific Legal Topics:** *Rule number (e.g. Rule 5, 9, 14, 28)*, *dead rent calculation*, *royalty rate*, *Khatedari consent deed*, *boundary pillar paint*, or *penalty under Section 21*.\n• **Mineral Class:** Minor minerals (sand, gravel, limestone, granite, marble) are governed by state RMMCR 2017 rules, whereas major minerals fall under central MCR.\n• **Sample Question:** *"What is the maximum period for which a mining lease can be granted?"* or *"What is required for mining on Khatedari land?"*`;
+    return `I could not find specific statutory details for this inquiry in my current documents.\n\nTry asking with specific legal terms (e.g. *lease period*, *dead rent*, *royalty rate*, *Khatedari consent*, *boundary pillars*, or *Rule 14 / Section 21*).`;
   }
 
   if (agent.id === 'mine-safety-sop') {
-    return `I could not find a verified safety procedure or SOP clause for this specific topic in the currently uploaded **DGMS Mining Safety Regulations**.\n\n💡 **Suggested searches:**\n• **Safety Procedures:** *blasting danger zone & sentries*, *open-cast PPE requirements*, *slope stability monitoring*, or *emergency evacuation protocol*.\n• **Regulation Reference:** Search by *DGMS Metalliferous Mines Regulations (MMR 1961)* or specific operational risk assessment checklist items.`;
+    return `I could not find a verified safety procedure for this specific topic in the uploaded safety manuals.\n\nTry asking about standard procedures like *blasting precautions*, *PPE protocols*, or *emergency evacuation*.`;
   }
 
-  return `I could not find verified information covering this inquiry in the documents currently uploaded for **${agent.name}**.\n\n💡 **Suggestions:**\n• Try rephrasing your inquiry with specific technical keywords or rule numbers.\n• Additional reference PDFs, state gazettes, and manuals can be uploaded via the **Admin Knowledge Base** (\`/admin/documents\`).`;
+  return `I could not find verified information for this inquiry in my documents. Please try rephrasing with specific keywords or rule numbers.`;
 }
 
 // Ask a question to an agent using retrieval augmented generation (RAG)
