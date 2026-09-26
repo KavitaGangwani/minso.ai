@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MINSO.AI — AI agents that read your mining documents</title>
+<meta name="theme-color" content="#0E1012">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#0B0D0E;--panel:#15181B;--panel2:#1C2023;--line:#2A2F35;--line2:#363C43;--ink:#ECE8DF;--mute:#9297A0;--faint:#5C636B;--amber:#FFB81C;--amber-dim:#C98F14;--amber-ink:#1A1300;--rock1:#1B1F23;--rock2:#242A2F;--rock3:#2F373D;--rock4:#3B444C;--ok:#5DBB7A;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:inherit;margin:0}
+html{scroll-padding-top:70px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.6 "Hanken Grotesk",system-ui,sans-serif;overflow-x:hidden}
+h1,h2,h3,h4{font-family:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;font-weight:800;line-height:.98;text-transform:uppercase;letter-spacing:.006em}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+@media(max-width:640px){.wrap{padding:0 20px}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:9px;background:var(--amber);color:var(--amber-ink);border:0;padding:14px 24px;font-weight:700;font-size:15px;border-radius:2px;transition:filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line2)}
+.btn.ghost:hover{border-color:var(--amber);color:var(--amber)}
+.btn svg{transition:transform .15s}.btn:hover svg{transform:translateX(3px)}
+
+/* header */
+header.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:30px;padding:16px 32px;border-bottom:1px solid var(--line);background:rgba(11,13,14,.86);backdrop-filter:blur(10px)}
+.logo{display:flex;align-items:center;gap:10px;font-family:"Big Shoulders Display",sans-serif;font-weight:900;font-size:24px;text-transform:uppercase}
+.logo .dot{color:var(--amber)}
+header.top nav{display:flex;gap:28px;margin-left:44px}
+header.top nav a{color:var(--mute);font-size:15px;padding:6px 0;border-bottom:2px solid transparent;transition:color .15s}
+header.top nav a:hover{color:var(--ink)}
+header.top .actions{margin-left:auto;display:flex;gap:12px;align-items:center}
+.navbtn{display:none}
+.admin-link{color:var(--faint);opacity:.55;padding:8px;display:flex;border-radius:2px;transition:opacity .15s,color .15s}
+.admin-link:hover{opacity:1;color:var(--mute)}
+@media(max-width:900px){header.top nav,header.top .actions .btn.ghost{display:none}}
+
+/* hazard */
+.hazard{height:8px;background:repeating-linear-gradient(-45deg,var(--amber) 0 11px,var(--bg) 11px 22px)}
+
+/* hero */
+.hero{position:relative;padding:88px 0 64px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto -10%;height:520px;background:radial-gradient(ellipse 60% 100% at 30% 0%,rgba(255,184,28,.09),transparent 70%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--amber);font-size:13px;font-weight:600;letter-spacing:.03em;margin-bottom:18px}
+.eyebrow i{width:16px;height:2px;background:var(--amber);display:block}
+.hero h1{font-size:clamp(44px,5.6vw,74px);letter-spacing:-.01em}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero p.lede{color:var(--mute);font-size:18px;max-width:46ch;margin:22px 0 32px}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+.hero .fine{display:flex;align-items:center;gap:8px;color:var(--faint);font-size:13px}
+.hero .fine svg{color:var(--ok);flex:none}
+.reveal{opacity:0;transform:translateY(16px);animation:rise .7s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;transform:none}}
+
+/* hero visual */
+.hv{position:relative;aspect-ratio:1/.92}
+.hv svg{width:100%;height:100%;display:block}
+.hv .card{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:14px 16px;box-shadow:0 24px 48px -20px rgba(0,0,0,.6)}
+.hv .doc{top:2%;left:0;width:52%;animation:float1 7s ease-in-out infinite}
+.hv .doc h4{font-size:13px;text-transform:none;font-weight:700;font-family:"Hanken Grotesk";display:flex;align-items:center;gap:8px;margin-bottom:9px;color:var(--ink)}
+.hv .doc ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.hv .doc li{font-size:12.5px;color:var(--mute);display:flex;align-items:center;gap:7px}
+.hv .doc li svg{color:var(--faint);flex:none}
+.hv .cite{bottom:6%;right:0;width:58%;border-left:3px solid var(--amber);animation:float2 8s ease-in-out infinite}
+.hv .cite .q{font-size:12px;color:var(--mute);margin-bottom:8px}
+.hv .cite .a{font-size:13.5px;color:var(--ink);margin-bottom:10px;line-height:1.5}
+.hv .chip{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);padding:4px 9px;border-radius:2px;font-size:11.5px;color:var(--mute)}
+.hv .chip svg{color:var(--amber);flex:none}
+@keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+@media(prefers-reduced-motion:reduce){.hv .doc,.hv .cite{animation:none}}
+
+/* trust strip */
+.trust{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.trust .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.trust .item{display:flex;align-items:flex-start;gap:13px;padding:26px 20px}
+.trust .item+.item{border-left:1px solid var(--line)}
+.trust svg{color:var(--amber);flex:none;margin-top:2px}
+.trust h4{font-family:"Hanken Grotesk";text-transform:none;font-weight:700;font-size:15px;letter-spacing:0;margin-bottom:4px}
+.trust p{color:var(--mute);font-size:13.5px;line-height:1.5}
+@media(max-width:760px){.trust .wrap{grid-template-columns:1fr}.trust .item+.item{border-left:0;border-top:1px solid var(--line)}}
+
+/* section heading */
+.shead{max-width:640px;margin:0 0 40px}
+.shead .eyebrow{margin-bottom:12px}
+.shead h2{font-size:clamp(32px,4vw,46px)}
+.shead p{color:var(--mute);font-size:16.5px;margin-top:12px}
+section{padding:76px 0}
+
+/* how it works */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.step{background:var(--bg);padding:30px 26px}
+.step .n{font-family:"Big Shoulders Display";font-size:15px;color:var(--amber);font-weight:800;margin-bottom:16px}
+.step h3{font-size:24px;text-transform:none;letter-spacing:0;margin-bottom:9px}
+.step p{color:var(--mute);font-size:14.5px}
+@media(max-width:760px){.steps{grid-template-columns:1fr}}
+
+/* agents */
+.agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:20px}
+.acard{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:26px 24px 24px;display:flex;flex-direction:column;position:relative;transition:border-color .15s,transform .15s}
+.acard.live{border-color:var(--amber)}
+.acard:hover{transform:translateY(-2px);border-color:var(--line2)}
+.acard.live:hover{border-color:var(--amber)}
+.acard .icon{width:58px;height:58px;color:var(--amber);margin-bottom:22px;flex:none}
+.status{position:absolute;top:22px;right:22px;font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;border:1px solid var(--line2);color:var(--mute);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.acard.live .status{color:var(--ok);border-color:rgba(93,187,122,.4)}
+.acard.live .status i{width:6px;height:6px;border-radius:50%;background:var(--ok);display:block}
+.acard h3{font-size:22px;margin-bottom:10px;letter-spacing:0;max-width:15ch}
+.acard p{color:var(--mute);font-size:14px;margin-bottom:18px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.tag{background:var(--rock1);border:1px solid var(--line);padding:3px 10px;font-size:12px;color:var(--mute);border-radius:20px}
+.acard .go{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:700;font-size:14px;color:var(--amber-ink);background:var(--amber);padding:11px 16px;border-radius:3px;margin-top:auto}
+.acard:not(.live) .go{background:transparent;border:1.5px solid var(--line2);color:var(--faint)}
+.acard.live .go svg{transition:transform .15s}.acard.live:hover .go svg{transform:translateX(3px)}
+
+/* cta band */
+.band{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:64px 0;text-align:center}
+.band h2{font-size:clamp(30px,4vw,44px);margin-bottom:14px}
+.band p{color:var(--mute);font-size:16px;max-width:50ch;margin:0 auto 30px}
+.band .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* footer */
+footer{padding:40px 0 30px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+footer .cols{display:flex;gap:44px}
+footer .col h5{font-family:"Hanken Grotesk";text-transform:none;font-weight:700;font-size:13px;color:var(--mute);margin-bottom:10px;letter-spacing:0}
+footer .col a{display:block;color:var(--faint);font-size:14px;padding:4px 0}
+footer .col a:hover{color:var(--ink)}
+footer .bottom{border-top:1px solid var(--line);margin-top:34px;padding-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:var(--faint);font-size:13px}
+@media(max-width:640px){footer .wrap{flex-direction:column;align-items:flex-start}}
+</style></head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-hat" viewBox="0 0 32 32"><path d="M4 22a12 12 0 0 1 24 0z" fill="currentColor"/><rect x="2" y="22" width="28" height="4" rx="1.5" fill="currentColor"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 12h8M9 16h8M9 8h4" stroke="currentColor" stroke-width="1.6"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10" r="2.4" fill="currentColor"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-4.3-4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-legal" viewBox="0 0 64 64"><path d="M20 8h16l8 8v34a2 2 0 0 1-2 2H20a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M36 8v8h8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M24 30h16M24 36h16M24 42h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><g transform="translate(5,33)"><path d="M9 0v18M2 20h14M9 4L3 14a4 4 0 0 0 12 0zM9 4l6 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></g></symbol>
+<symbol id="ic-safety" viewBox="0 0 64 64"><path d="M8 40a20 14 0 0 1 40 0z" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="6" y="40" width="44" height="5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><g transform="translate(34,10)"><path d="M2 22h16l4 4v20a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V22z" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6 30h10M6 35h10M6 40h7" stroke="currentColor" stroke-width="1.1"/></g></symbol>
+<symbol id="ic-royalty" viewBox="0 0 64 64"><ellipse cx="18" cy="44" rx="13" ry="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 44v6a13 5 0 0 0 26 0v-6" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="18" cy="34" rx="13" ry="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 34v6" stroke="currentColor" stroke-width="1.6"/><g transform="translate(32,8)"><path d="M2 20h18l4 4v22a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V20z" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 30h10M8 35h6" stroke="currentColor" stroke-width="1.1"/></g></symbol>
+<symbol id="ic-enviro" viewBox="0 0 64 64"><path d="M14 40c0-14 10-24 24-26-2 14-10 24-24 26z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 40c6-4 12-10 16-18" fill="none" stroke="currentColor" stroke-width="1.3"/><g transform="translate(30,30)"><path d="M2 8h18l4 4v18a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8z" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 18h10M8 23h6" stroke="currentColor" stroke-width="1.1"/></g></symbol>
+</defs></svg>
+
+<header class="top">
+  <a class="logo" href="#top"><svg width="26" height="26"><use href="#i-hat" style="color:var(--amber)"/></svg>MINSO<span class="dot">.AI</span></a>
+  <nav>
+    <a href="#top">Home</a>
+    <a href="#how">How it works</a>
+    <a href="#agents">Agents</a>
+    <a href="#">About</a>
+  </nav>
+  <div class="actions">
+    <a class="btn" href="#agents">Start free trial</a>
+    <a class="admin-link" href="#" title="Admin sign in" aria-label="Admin sign in"><svg width="15" height="15"><use href="#i-lock"/></svg></a>
+  </div>
+</header>
+
+<div class="hazard"></div>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow reveal" style="animation-delay:.05s"><i></i>Document-grounded mining agents</div>
+      <h1 class="reveal" style="animation-delay:.12s">Ask the rulebook.<br>Get the <em>page.</em></h1>
+      <p class="lede reveal" style="animation-delay:.2s">MINSO.AI agents read your mining acts, rules and SOPs, then answer questions in plain language — every line traced back to a real document and page, never a guess.</p>
+      <div class="cta reveal" style="animation-delay:.28s">
+        <a class="btn" href="#agents">Start your 14-day trial<svg width="16" height="16"><use href="#i-arrow"/></svg></a>
+        <a class="btn ghost" href="#how">See how it works</a>
+      </div>
+      <div class="fine reveal" style="animation-delay:.34s"><svg width="15" height="15"><use href="#i-check"/></svg>Answers only from indexed documents — no source, no answer.</div>
+    </div>
+    <div class="hv reveal" style="animation-delay:.2s">
+      <svg viewBox="0 0 560 500" role="img" aria-label="Cross-section of an open-pit mine with terraced benches">
+        <defs><linearGradient id="skyfade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15181B"/><stop offset="1" stop-color="#0B0D0E"/></linearGradient></defs>
+        <rect width="560" height="500" fill="url(#skyfade)" rx="4"/>
+        <rect x="0" y="250" width="560" height="42" fill="var(--rock2)"/>
+        <rect x="0" y="292" width="560" height="46" fill="var(--rock3)"/>
+        <rect x="0" y="338" width="560" height="52" fill="var(--rock4)"/>
+        <rect x="0" y="390" width="560" height="60" fill="#454F58"/>
+        <path d="M0 300L200 250L200 292L340 292L340 338L560 338" fill="none" stroke="var(--line2)" stroke-width="1"/>
+        <polyline points="40,250 200,250 200,292 340,292 340,338 470,338 470,390 560,390" fill="none" stroke="var(--amber)" stroke-width="3" opacity=".85"/>
+        <g opacity=".5" stroke="var(--faint)" stroke-width="1">
+          <line x1="60" y1="140" x2="60" y2="250"/><line x1="60" y1="140" x2="90" y2="140"/>
+        </g>
+        <circle cx="470" cy="160" r="3" fill="var(--amber)"/><circle cx="150" cy="120" r="2" fill="var(--faint)"/><circle cx="330" cy="90" r="2" fill="var(--faint)"/>
+      </svg>
+      <div class="card doc">
+        <h4><svg width="15" height="15"><use href="#i-doc"/></svg>Indexed documents</h4>
+        <ul>
+          <li><svg width="13" height="13"><use href="#i-check"/></svg>MMDR Act, 1957</li>
+          <li><svg width="13" height="13"><use href="#i-check"/></svg>Rajasthan Minor Mineral Rules, 2017</li>
+        </ul>
+      </div>
+      <div class="card cite">
+        <div class="q">"What is the term of a quarry licence?"</div>
+        <div class="a">A quarry licence is granted for a term not exceeding three years, renewable on application.</div>
+        <span class="chip"><svg width="12" height="12"><use href="#i-pin"/></svg>MMCR 2017 · p. 14</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust">
+  <div class="wrap">
+    <div class="item"><svg width="19" height="19"><use href="#i-pin"/></svg><div><h4>Page-level citations</h4><p>Every answer shows the exact document and page it came from.</p></div></div>
+    <div class="item"><svg width="19" height="19"><use href="#i-search"/></svg><div><h4>Retrieval, not memory</h4><p>Answers are built from your PDFs, not the model's general knowledge.</p></div></div>
+    <div class="item"><svg width="19" height="19"><use href="#i-check"/></svg><div><h4>Says when it doesn't know</h4><p>If the documents don't cover it, the agent says so — it won't guess.</p></div></div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="shead">
+      <div class="eyebrow"><i></i>How it works</div>
+      <h2>From PDF to a cited answer</h2>
+      <p>Three steps happen behind every question, in well under a second for retrieval.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">01 — Index</div><h3>Documents become chunks</h3><p>PDFs are split by rule and section, each piece keeping its real page number.</p></div>
+      <div class="step"><div class="n">02 — Retrieve</div><h3>Your question finds its match</h3><p>The question is embedded and compared against the agent's own document set only.</p></div>
+      <div class="step"><div class="n">03 — Answer</div><h3>A grounded reply, with sources</h3><p>The model answers only from what was retrieved, citing each source it used.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="agents">
+  <div class="wrap">
+    <div class="shead">
+      <div class="eyebrow"><i></i>Available agents</div>
+      <h2>Pick an agent, start asking</h2>
+      <p>Each agent knows only its own documents. More are being trained on safety and operations material.</p>
+    </div>
+    <div class="agrid">
+      <div class="acard live">
+        <span class="status"><i></i>Available</span>
+        <svg class="icon" viewBox="0 0 64 64"><use href="#ic-legal"/></svg>
+        <h3>Rajasthan Mining Law</h3>
+        <p>Mining acts, rules and lease procedure — every answer cites the source rule and page.</p>
+        <div class="tags"><span class="tag">Law</span><span class="tag">Rajasthan</span><span class="tag">Leases</span></div>
+        <a class="go" href="#">Open agent<svg width="14" height="14"><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="acard">
+        <span class="status">Coming soon</span>
+        <svg class="icon" viewBox="0 0 64 64"><use href="#ic-safety"/></svg>
+        <h3>Mine Safety SOPs</h3>
+        <p>Step-by-step safety procedures, blasting protocol and risk checklists.</p>
+        <div class="tags"><span class="tag">Safety</span><span class="tag">SOPs</span></div>
+        <a class="go" href="#">Notify me</a>
+      </div>
+      <div class="acard">
+        <span class="status">Coming soon</span>
+        <svg class="icon" viewBox="0 0 64 64"><use href="#ic-royalty"/></svg>
+        <h3>Royalty &amp; Revenue</h3>
+        <p>Royalty rates, dead rent schedules and payment procedure by mineral.</p>
+        <div class="tags"><span class="tag">Royalty</span><span class="tag">Revenue</span></div>
+        <a class="go" href="#">Notify me</a>
+      </div>
+      <div class="acard">
+        <span class="status">Coming soon</span>
+        <svg class="icon" viewBox="0 0 64 64"><use href="#ic-enviro"/></svg>
+        <h3>Environmental Clearance</h3>
+        <p>EC and consent conditions, monitoring obligations and reporting formats.</p>
+        <div class="tags"><span class="tag">Environment</span><span class="tag">Compliance</span></div>
+        <a class="go" href="#">Notify me</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <h2>Want this for your own documents?</h2>
+    <p>Tell us what you're working with — rules, SOPs, manuals — and we'll help you set up an agent trained on them.</p>
+    <div class="cta">
+      <a class="btn" href="#">Connect with us<svg width="16" height="16"><use href="#i-arrow"/></svg></a>
+      <a class="btn ghost" href="#agents">Explore agents</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a class="logo" href="#top"><svg width="24" height="24"><use href="#i-hat" style="color:var(--amber)"/></svg>MINSO<span class="dot">.AI</span></a>
+      <p style="color:var(--faint);font-size:13.5px;margin-top:10px;max-width:34ch">Document-based AI agents for the mining industry. Portfolio project — not legal advice.</p>
+    </div>
+    <div class="cols">
+      <div class="col"><h5>Product</h5><a href="#agents">Agents</a><a href="#how">How it works</a></div>
+      <div class="col"><h5>Company</h5><a href="#">About</a><a href="#" style="color:var(--faint)">Admin</a></div>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    <span>Preview build. Not affiliated with any government body.</span>
+    <span>MINSO.AI</span>
+  </div>
+</footer>
+
+</body></html>
