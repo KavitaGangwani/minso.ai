@@ -359,21 +359,32 @@ a.card:hover {
 
 .sugg {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: 8px;
   margin-bottom: 12px;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sugg button {
   background: var(--panel);
   border: 1px solid var(--line);
-  padding: 7px 12px;
-  font-size: 14px;
-  border-radius: 2px;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--ink);
 }
 
 .sugg button:hover {
   border-color: var(--amber);
+  background: var(--panel2);
+  color: var(--amber);
 }
 
 .input {
