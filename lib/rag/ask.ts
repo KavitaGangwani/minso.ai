@@ -6,6 +6,36 @@ import type { SourceCitation, ChunkUsedDetail, AskResult } from '../types';
 
 export type { SourceCitation, ChunkUsedDetail, AskResult };
 
+// Check if user query is a conversational greeting or intro
+function isGreetingOrIntro(text: string): boolean {
+  const clean = text.trim().toLowerCase().replace(/[^\w\s]/g, '');
+  const words = clean.split(/\s+/);
+  
+  if (words.length <= 4) {
+    const singleWordGreetings = ['hi', 'hii', 'hiii', 'hey', 'heyy', 'hello', 'helloo', 'hola', 'howdy', 'namaste', 'greetings', 'help', 'start', 'info'];
+    if (singleWordGreetings.includes(clean)) return true;
+  }
+
+  const greetingPatterns = [
+    /^(hi+|hey+|hello+|hola+|howdy|namaste|greetings)\b/,
+    /^(good\s+(morning|afternoon|evening|day))\b/,
+    /^(who\s+are\s+you|what\s+are\s+you|what\s+can\s+you\s+do|how\s+can\s+you\s+help|what\s+is\s+this|tell\s+me\s+about\s+yourself)\b/,
+    /^(what\s+is\s+your\s+name|introduce\s+yourself)\b/,
+    /^(help\s+me|can\s+you\s+help\s+me)\b/
+  ];
+  return greetingPatterns.some((pattern) => pattern.test(clean));
+}
+
+function getAgentGreetingResponse(agent: Agent): string {
+  if (agent.id === 'rajasthan-mining-law') {
+    return `Hello! I am the **${agent.name}**.\n\nI can answer statutory questions regarding Rajasthan mining laws, the MMDR Act 1957, Rajasthan Minor Mineral Concession Rules (RMMCR 2017), lease compliance, and royalty calculations with verified citations.\n\nHow can I assist you with your mining inquiry today?`;
+  }
+  if (agent.id === 'mine-safety-sop') {
+    return `Hello! I am the **${agent.name}**.\n\nI provide step-by-step safety procedures, DGMS Metalliferous Mines Regulations, risk assessment checklists, and worker safety protocols.\n\nWhat safety procedure or regulation would you like to check?`;
+  }
+  return `Hello! I am the **${agent.name}**.\n\nI am grounded in statutory documents and mining manuals. How can I assist you today?`;
+}
+
 // Ask a question to an agent using retrieval augmented generation (RAG)
 export async function askQuestion(
   agent: Agent,
@@ -13,6 +43,34 @@ export async function askQuestion(
 ): Promise<AskResult> {
   const startTotal = performance.now();
   const cleanQuestion = question.trim();
+
+  // Handle conversational greetings and introductions immediately
+  if (isGreetingOrIntro(cleanQuestion)) {
+    const totalMs = Number((performance.now() - startTotal).toFixed(1));
+    const greetingReply = getAgentGreetingResponse(agent);
+
+    await logQueryPerformance({
+      agentId: agent.id,
+      question: cleanQuestion,
+      answer: greetingReply,
+      sourcesCount: 0,
+      chunksRetrieved: 0,
+      retrievalMs: 0,
+      llmMs: 0,
+      totalMs,
+    });
+
+    return {
+      answer: greetingReply,
+      sources: [],
+      chunksUsed: [],
+      timings: {
+        retrievalMs: 0,
+        llmMs: 0,
+        totalMs,
+      },
+    };
+  }
 
   // 1. Perform direct vector similarity search
   const startRetrieval = performance.now();

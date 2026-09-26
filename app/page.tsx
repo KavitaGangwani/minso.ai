@@ -30,7 +30,7 @@ const MOCK_SHOWCASE_AGENTS: Agent[] = [
     description: 'Get answers on safety procedures, risk assessments, DGMS guidelines and best operational practices.',
     tags: ['Safety', 'Compliance', 'Procedures'],
     instructions: '',
-    published: true,
+    published: false, // Default draft status until activated in admin
     created_at: new Date().toISOString(),
     chunk_size: 800,
     chunk_overlap: 100,
