@@ -39,9 +39,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract client header identifier if provided
-    const headerClientId = request.headers.get('x-minso-client-id') || clientId;
-    const headerClientKey = request.headers.get('x-minso-client-key');
+    // Extract client header identifier and API key if provided in headers or body
+    const bodyClientId = body.clientId || body.client_id;
+    const bodyClientKey = body.apiKey || body.api_key || body.clientKey || body.client_key;
+
+    const headerClientId = request.headers.get('x-minso-client-id') || bodyClientId;
+    const headerClientKey =
+      request.headers.get('x-minso-client-key') ||
+      request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ||
+      bodyClientKey;
 
     // Process RAG query with chunk telemetry and client audit
     const result = await processClientQuery({

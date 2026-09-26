@@ -231,8 +231,17 @@ export async function getClientQueries(clientId?: string): Promise<ClientQueryRe
 
     if (!error && logs && logs.length > 0) {
       for (const log of logs) {
-        // Only match external client if log has an explicit registered client_id
-        const matchedClient = log.client_id ? clientMap.get(log.client_id) : null;
+        // Check if question has encoded [client:<id>] tag or direct client_id
+        const clientMatch = typeof log.question === 'string' ? log.question.match(/^\[client:([^\]]+)\]/) : null;
+        let effectiveClientId = log.client_id || (clientMatch ? clientMatch[1] : null);
+        let cleanQuestion = log.question || '';
+
+        if (clientMatch) {
+          effectiveClientId = clientMatch[1];
+          cleanQuestion = cleanQuestion.replace(/^\[client:[^\]]+\]\s*/, '');
+        }
+
+        const matchedClient = effectiveClientId ? clientMap.get(effectiveClientId) : null;
 
         const sourcesCount = Number(log.sources_count || 0);
         const chunksUsed: ChunkUsedDetail[] = [];
@@ -250,12 +259,12 @@ export async function getClientQueries(clientId?: string): Promise<ClientQueryRe
 
         dbRecords.push({
           id: `cq-${log.id}`,
-          clientId: matchedClient ? matchedClient.id : 'client-direct',
-          clientName: matchedClient ? matchedClient.name : 'MINSO.AI Main Website',
+          clientId: matchedClient ? matchedClient.id : (effectiveClientId ? effectiveClientId : 'client-direct'),
+          clientName: matchedClient ? matchedClient.name : (effectiveClientId ? effectiveClientId : 'MINSO.AI Main Website'),
           clientDomain: matchedClient ? matchedClient.domain : 'https://minso.ai',
           agentId: log.agent_id,
           agentName: agentMap.get(log.agent_id) || log.agent_id,
-          question: log.question,
+          question: cleanQuestion,
           answer: log.answer,
           sourcesCount: sourcesCount,
           retrievalMs: Number(log.retrieval_ms || 110),
@@ -380,6 +389,18 @@ export async function processClientQuery(params: {
           last_active: client.lastActive,
         })
         .eq('id', client.id);
+
+      // Persist client query into query_logs table with client tag
+      await supabase.from('query_logs').insert({
+        agent_id: agent.id,
+        question: `[client:${client.id}] ${params.question}`,
+        answer: result.answer,
+        sources_count: result.sources.length,
+        chunks_retrieved: chunksUsed.length,
+        retrieval_ms: result.timings?.retrievalMs || 0,
+        llm_ms: result.timings?.llmMs || 0,
+        total_ms: result.timings?.totalMs || 0,
+      });
     } catch {
       // Non-fatal
     }
