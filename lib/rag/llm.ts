@@ -92,13 +92,12 @@ export async function callLLM(
 ): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    throw new Error(
-      'OPENROUTER_API_KEY is not set. Please add your key to .env.local.'
-    );
+    console.error('[LLM Error] OPENROUTER_API_KEY is not configured in Vercel / environment variables.');
+    return 'The AI agent service is currently missing its OPENROUTER_API_KEY configuration in the deployment settings. Please configure OPENROUTER_API_KEY in your Vercel Project Settings.';
   }
 
   const primaryModel =
-    process.env.OPENROUTER_MODEL || 'openrouter/free';
+    process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat';
 
   const pool = [
     primaryModel,
