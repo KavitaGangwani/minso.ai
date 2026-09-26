@@ -5,14 +5,25 @@ import Link from 'next/link';
 import type { Agent } from '@/lib/types';
 import MessageBubble, { ChatMessage } from './MessageBubble';
 
-const SUGGESTED_QUESTIONS = [
-  'How do I renew a minor mineral lease?',
-  'What is the royalty on limestone?',
-  'What must a mine do before blasting?',
-];
+const DEFAULT_SUGGESTED_QUESTIONS: Record<string, string[]> = {
+  'rajasthan-mining-law': [
+    'What is the maximum period for which a mining lease can be granted?',
+    'What is required when applying for a mining lease on Khatedari land?',
+    'What notice period is required before cancellation or adverse orders?',
+  ],
+  'mine-safety-sop': [
+    'What mandatory safety precautions are required before open-pit blasting?',
+    'What are the mandatory PPE requirements for open-cast workers?',
+    'What is the emergency protocol during bench or slope failure?',
+  ],
+};
 
 // Interactive chat window for conversing with an agent powered by real RAG
 export default function ChatWindow({ agent }: { agent: Agent }) {
+  const suggestedQuestions =
+    DEFAULT_SUGGESTED_QUESTIONS[agent.id] ||
+    DEFAULT_SUGGESTED_QUESTIONS['rajasthan-mining-law'];
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'init-1',
@@ -157,7 +168,7 @@ export default function ChatWindow({ agent }: { agent: Agent }) {
       {/* Suggested questions buttons */}
       {showSuggestions && (
         <div className="sugg" id="sugg">
-          {SUGGESTED_QUESTIONS.map((q) => (
+          {suggestedQuestions.map((q) => (
             <button key={q} onClick={() => handleSend(q)} disabled={loading}>
               {q}
             </button>
