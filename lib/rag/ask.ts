@@ -36,6 +36,18 @@ function getAgentGreetingResponse(agent: Agent): string {
   return `Hello! I am the **${agent.name}**.\n\nI am grounded in statutory documents and mining manuals. How can I assist you today?`;
 }
 
+function buildNotFoundResponse(agent: Agent, query: string): string {
+  if (agent.id === 'rajasthan-mining-law') {
+    return `I could not find a specific statutory clause covering this inquiry in the currently ingested **Rajasthan Minor Mineral Concession Rules (RMMCR 2017)** or **MMDR Act 1957** records.\n\n💡 **Suggested searches:**\n• **Specific Legal Topics:** *Rule number (e.g. Rule 5, 9, 14, 28)*, *dead rent calculation*, *royalty rate*, *Khatedari consent deed*, *boundary pillar paint*, or *penalty under Section 21*.\n• **Mineral Class:** Minor minerals (sand, gravel, limestone, granite, marble) are governed by state RMMCR 2017 rules, whereas major minerals fall under central MCR.\n• **Sample Question:** *"What is the maximum period for which a mining lease can be granted?"* or *"What is required for mining on Khatedari land?"*`;
+  }
+
+  if (agent.id === 'mine-safety-sop') {
+    return `I could not find a verified safety procedure or SOP clause for this specific topic in the currently uploaded **DGMS Mining Safety Regulations**.\n\n💡 **Suggested searches:**\n• **Safety Procedures:** *blasting danger zone & sentries*, *open-cast PPE requirements*, *slope stability monitoring*, or *emergency evacuation protocol*.\n• **Regulation Reference:** Search by *DGMS Metalliferous Mines Regulations (MMR 1961)* or specific operational risk assessment checklist items.`;
+  }
+
+  return `I could not find verified information covering this inquiry in the documents currently uploaded for **${agent.name}**.\n\n💡 **Suggestions:**\n• Try rephrasing your inquiry with specific technical keywords or rule numbers.\n• Additional reference PDFs, state gazettes, and manuals can be uploaded via the **Admin Knowledge Base** (\`/admin/documents\`).`;
+}
+
 // Ask a question to an agent using retrieval augmented generation (RAG)
 export async function askQuestion(
   agent: Agent,
@@ -99,15 +111,15 @@ export async function askQuestion(
   }
   const retrievalMs = Number((performance.now() - startRetrieval).toFixed(1));
 
-  // If search still returns no relevant chunks, reply immediately without calling LLM
+  // If search still returns no relevant chunks, reply with structured helpful guidance
   if (relevantChunks.length === 0) {
     const totalMs = Number((performance.now() - startTotal).toFixed(1));
-    const emptyAnswer = 'I could not find this in my documents.';
+    const helpfulAnswer = buildNotFoundResponse(agent, cleanQuestion);
 
     await logQueryPerformance({
       agentId: agent.id,
       question: cleanQuestion,
-      answer: emptyAnswer,
+      answer: helpfulAnswer,
       sourcesCount: 0,
       chunksRetrieved: 0,
       retrievalMs,
@@ -116,7 +128,7 @@ export async function askQuestion(
     });
 
     return {
-      answer: emptyAnswer,
+      answer: helpfulAnswer,
       sources: [],
       chunksUsed: [],
       timings: {
