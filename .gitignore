@@ -32,3 +32,6 @@ data/app.db-journal
 data/app.db-shm
 data/app.db-wal
 data/documents/
+
+# Bundles & Scratch
+repomix-output.md

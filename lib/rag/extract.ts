@@ -16,7 +16,7 @@ export async function extractTextFromPdf(input: string | Buffer): Promise<PageTe
     }
     dataBuffer = fs.readFileSync(input);
   }
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line
   const pdfModule = require('pdf-parse');
 
   // 1. Check for pdf-parse v2 class (PDFParse)

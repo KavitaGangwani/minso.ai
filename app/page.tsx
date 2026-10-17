@@ -1,293 +1,597 @@
-import SiteHeader from '@/components/SiteHeader';
-import SiteFooter from '@/components/SiteFooter';
-import MiningHeroVisual from '@/components/MiningHeroVisual';
-import AgentCard from '@/components/AgentCard';
-import HomeQuerySimulator from '@/components/HomeQuerySimulator';
+import '@/app/home.css';
+import HeroPit from '@/components/HeroPit';
+import InteractiveDemoWindow from '@/components/InteractiveDemoWindow';
+import HaulRoadScene from '@/components/HaulRoadScene';
 import { getPublishedAgents } from '@/lib/agents';
 import type { Agent } from '@/lib/types';
 
-// Force dynamic so changes in published state reflect immediately
 export const dynamic = 'force-dynamic';
 
-// Sample fallback agents to guarantee the full 4-card showcase matching reference mockup
-const MOCK_SHOWCASE_AGENTS: Agent[] = [
+// ---------------------------------------------------------------------------
+// Miner head SVG (same art as app/icon.svg) – inlined for nav logo
+// ---------------------------------------------------------------------------
+function MinerHead({ size = 40 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden="true">
+      <defs>
+        <linearGradient id="lg-nav" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" style={{ stopColor: 'var(--accent)' }} />
+          <stop offset="1" style={{ stopColor: 'var(--accent-2)' }} />
+        </linearGradient>
+      </defs>
+      <circle cx="6.4"  cy="23.3" r="2.5" fill="#F5C9A2" />
+      <circle cx="33.6" cy="23.3" r="2.5" fill="#F5C9A2" />
+      <circle cx="20"   cy="24"   r="13"  fill="#FFDDBD" />
+      <circle cx="9.8"  cy="29.8" r="2.4" fill="#FF8FA3" opacity="0.65" />
+      <circle cx="30.2" cy="29.8" r="2.4" fill="#FF8FA3" opacity="0.65" />
+      <circle cx="14.2" cy="26.2" r="3.2" fill="#1B1A17" />
+      <circle cx="25.8" cy="26.2" r="3.2" fill="#1B1A17" />
+      <circle cx="13.1" cy="24.9" r="1.15" fill="#fff" />
+      <circle cx="15.4" cy="27.7" r="0.55" fill="#fff" />
+      <circle cx="24.7" cy="24.9" r="1.15" fill="#fff" />
+      <circle cx="27"   cy="27.7" r="0.55" fill="#fff" />
+      <path d="M18.2 30.6 Q20 32.6 21.8 30.6" fill="none" stroke="#1B1A17" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M6.5 19 C6.5 9 12 5 20 5 C28 5 33.5 9 33.5 19 Z" fill="url(#lg-nav)" />
+      <rect x="4.5" y="17.5" width="31" height="3.4" rx="1.7" fill="url(#lg-nav)" />
+      <rect x="4.5" y="19.6" width="31" height="1.3" rx="0.65" fill="#000" opacity="0.18" />
+      <path d="M10 13.5 Q12 9 17 7.4" fill="none" stroke="#fff" strokeOpacity="0.45" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="20" cy="12" r="6" fill="#FFE9B0" opacity="0.35" />
+      <circle cx="20" cy="12" r="3" fill="#FFF3D6" stroke="#1B1A17" strokeOpacity="0.45" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Fallback showcase agents (supplement DB results to always have 4 cards)
+// ---------------------------------------------------------------------------
+const MOCK_AGENTS: Agent[] = [
   {
     id: 'rajasthan-mining-law',
     name: 'Rajasthan Mining Legal Assistant',
     description: 'An AI assistant for exploring Rajasthan mining laws, rules, regulations and related legal documents.',
     tags: ['Rajasthan', 'Mining Law', 'Legal', 'Documents'],
-    instructions: '',
-    published: true,
+    instructions: '', published: true,
     created_at: new Date().toISOString(),
-    chunk_size: 800,
-    chunk_overlap: 100,
-    top_k: 6,
-    min_score: 0.5,
+    chunk_size: 800, chunk_overlap: 100, top_k: 6, min_score: 0.5,
   },
   {
     id: 'mine-safety-sop',
     name: 'Mining Safety Assistant',
     description: 'Get answers on safety procedures, risk assessments, DGMS guidelines and best operational practices.',
     tags: ['Safety', 'Compliance', 'Procedures'],
-    instructions: '',
-    published: false, // Default draft status until activated in admin
+    instructions: '', published: false,
     created_at: new Date().toISOString(),
-    chunk_size: 800,
-    chunk_overlap: 100,
-    top_k: 6,
-    min_score: 0.5,
+    chunk_size: 800, chunk_overlap: 100, top_k: 6, min_score: 0.5,
   },
   {
     id: 'mining-operations-assistant',
     name: 'Mining Operations Assistant',
     description: 'Support for day-to-day operations, haulage planning, bench extraction and production questions.',
     tags: ['Operations', 'Planning', 'Production'],
-    instructions: '',
-    published: false,
+    instructions: '', published: false,
     created_at: new Date().toISOString(),
-    chunk_size: 800,
-    chunk_overlap: 100,
-    top_k: 6,
-    min_score: 0.5,
+    chunk_size: 800, chunk_overlap: 100, top_k: 6, min_score: 0.5,
   },
   {
     id: 'mining-documentation-assistant',
     name: 'Mining Documentation Assistant',
     description: 'Help with statutory reports, lease forms, royalty calculation templates and documentation requirements.',
     tags: ['Reports', 'Templates', 'Compliance'],
-    instructions: '',
-    published: false,
+    instructions: '', published: false,
     created_at: new Date().toISOString(),
-    chunk_size: 800,
-    chunk_overlap: 100,
-    top_k: 6,
-    min_score: 0.5,
+    chunk_size: 800, chunk_overlap: 100, top_k: 6, min_score: 0.5,
   },
 ];
 
+// SVG icons used for the coming-soon agent cards
+function IconHardHat() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#A8A29E"
+      strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M8 42a24 22 0 0 1 48 0z" />
+      <path d="M4 42h56v6H4z" />
+      <path d="M32 20v22M22 24v18M42 24v18" />
+    </svg>
+  );
+}
+function IconHaulTruck() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#A8A29E"
+      strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M8 38h30l8-14h10v14h4v8H8z" />
+      <circle cx="20" cy="48" r="6" fill="#07080B" />
+      <circle cx="46" cy="48" r="6" fill="#07080B" />
+      <path d="M14 38l6-14h18" />
+    </svg>
+  );
+}
+function IconClipboard() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#A8A29E"
+      strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="14" y="10" width="36" height="46" rx="4" />
+      <path d="M24 6h16v8H24z" />
+      <path d="M22 28h20M22 36h20M22 44h12" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Home Page
+// ---------------------------------------------------------------------------
 export default async function HomePage() {
   const publishedAgents = await getPublishedAgents();
 
-  // Merge published database agents with showcase list so the UI always has full 4-card grid
+  // Merge DB agents with showcase mocks
   const displayAgents: { agent: Agent; isComingSoon: boolean }[] = [];
-
-  // Add real published agents first
-  publishedAgents.forEach((pa) => {
-    displayAgents.push({ agent: pa, isComingSoon: false });
-  });
-
-  // Supplement with mock showcase cards if fewer than 4 agents exist in database
-  MOCK_SHOWCASE_AGENTS.forEach((mock) => {
-    const alreadyExists = displayAgents.some((d) => d.agent.id === mock.id);
-    if (!alreadyExists && displayAgents.length < 4) {
-      displayAgents.push({
-        agent: mock,
-        isComingSoon: !mock.published,
-      });
+  publishedAgents.forEach((pa) => displayAgents.push({ agent: pa, isComingSoon: false }));
+  MOCK_AGENTS.forEach((mock) => {
+    if (!displayAgents.some((d) => d.agent.id === mock.id) && displayAgents.length < 4) {
+      displayAgents.push({ agent: mock, isComingSoon: !mock.published });
     }
   });
 
+  // Determine Rajasthan agent href (real published or fallback)
+  const rajAgent = displayAgents.find((d) => d.agent.id === 'rajasthan-mining-law');
+  const rajHref = rajAgent && !rajAgent.isComingSoon
+    ? `/agents/rajasthan-mining-law`
+    : `/agents/rajasthan-mining-law`;
+
+  // Remaining coming-soon agents
+  const soonAgents = displayAgents.filter((d) => d.isComingSoon);
+
   return (
-    <>
-      {/* Clean top header */}
-      <SiteHeader />
+    <div className="home-root">
 
-      {/* Yellow and black hazard stripe */}
-      <div className="hazard" />
+      {/* ================================================================
+          HERO SECTION
+      ================================================================ */}
+      <section id="top" className="hero-section">
+        {/* Background – pit mine SVG + orbs + grid overlay */}
+        <div className="hero-bg" aria-hidden="true">
+          <HeroPit />
+          <div className="orb orb1" style={{ width: 520, height: 520, left: -140, top: -100, background: 'color-mix(in srgb, var(--accent) 28%, transparent)' }} />
+          <div className="orb orb2" style={{ width: 480, height: 480, right: -120, top: 40, background: 'color-mix(in srgb, var(--accent-2) 24%, transparent)' }} />
+          <div className="hero-fade-top" />
+          <div className="hero-grid" />
+          <div className="hero-fade-bottom" />
+        </div>
 
-      {/* Main Container */}
-      <main className="wrap">
-        {/* ================= HERO SECTION ================= */}
-        <section className="hero">
-          <div>
-            <h1>
-              Ask the mining <span>paperwork.</span>
-            </h1>
+        {/* ── Floating glass nav ── */}
+        <div className="home-nav-outer">
+          <div className="home-nav-inner glass">
+            <a href="#top" className="home-nav-logo">
+              <MinerHead size={40} />
+              <span className="home-nav-wordmark">
+                MINSO<span className="gtext">.AI</span>
+              </span>
+            </a>
+            <nav className="home-nav-links" aria-label="Main navigation">
+              <a href="#documents">Documents</a>
+              <a href="#agents">Agents</a>
+              <a href="#features">Why MINSO</a>
+              <a href="#agents" className="btn-nav">Choose an agent</a>
+            </nav>
+          </div>
+        </div>
 
-            <p>
-              AI agents for the mining industry. Each one reads its own documents
-              and shows the page every answer came from.
+        {/* ── Hero copy ── */}
+        <div className="hero-copy">
+          {/* Live rotating pill */}
+          <div className="hero-live-pill glass">
+            <span className="hero-live-badge">LIVE</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              Now reading
+              <span className="words">
+                <span className="words-track" style={{ color: '#F4F1EC', fontWeight: 600, textAlign: 'left' }}>
+                  <span style={{ display: 'block', height: 30 }}>MMDR Act 1957</span>
+                  <span style={{ display: 'block', height: 30 }}>RMMCR 2017</span>
+                  <span style={{ display: 'block', height: 30 }}>DGMS circulars</span>
+                  <span style={{ display: 'block', height: 30 }}>Mine safety SOPs</span>
+                  <span style={{ display: 'block', height: 30 }}>MMDR Act 1957</span>
+                </span>
+              </span>
+            </span>
+          </div>
+
+          {/* Headline */}
+          <h1 className="hero-h1">
+            Ask the mining<br />
+            <span className="hero-h1-accent gtext">paperwork.</span>
+          </h1>
+
+          <p className="hero-sub">
+            AI agents for the mining industry. Each one reads its own documents and shows the page every answer came from.
+          </p>
+
+          <div className="hero-buttons">
+            <a href="#agents" className="btn-primary">
+              Choose an agent
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0B0E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+            <a href="#window" className="btn-ghost glass">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#F4F1EC" aria-hidden="true">
+                <path d="M7 4l13 8-13 8z" />
+              </svg>
+              Try interactive demo
+            </a>
+          </div>
+        </div>
+
+        {/* ── Interactive demo window (client component) ── */}
+        <div id="window">
+          <InteractiveDemoWindow />
+        </div>
+
+        <div className="hero-spacer" />
+      </section>
+
+      {/* ================================================================
+          PAPER TRAIL SECTION
+      ================================================================ */}
+      <section id="documents" className="paper-trail-section">
+        <div className="paper-trail-head">
+          <div className="section-eyebrow">THE PAPER TRAIL</div>
+          <h2 className="section-h2">
+            Acts, rules and circulars,{' '}
+            <span className="section-h2-serif gtext">ready for you.</span>
+          </h2>
+          <p className="section-sub">Each answer points to the exact page. Hover a document to pull it out of the pile.</p>
+        </div>
+
+        {/* Cards + floating icons */}
+        <div className="paper-trail-cards">
+          {/* Floating line-art icons */}
+          {/* Scales of justice */}
+          <svg className="floaty2 float-icon" width="92" height="92" viewBox="0 0 64 64" fill="none"
+            stroke="var(--accent)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
+            style={{ left: 0, top: -40 }} aria-hidden="true">
+            <path d="M32 8v44M18 52h28M32 14H14M32 14h18" />
+            <path d="M14 14L6 32h16z" />
+            <path d="M50 14l-8 18h16z" />
+            <path d="M6 32a8 5 0 0 0 16 0M42 32a8 5 0 0 0 16 0" />
+          </svg>
+          {/* Hard hat */}
+          <svg className="floaty3 float-icon" width="88" height="88" viewBox="0 0 64 64" fill="none"
+            stroke="var(--accent-2)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
+            style={{ right: 0, top: -30 }} aria-hidden="true">
+            <path d="M8 42a24 22 0 0 1 48 0z" />
+            <path d="M4 42h56v6H4z" />
+            <path d="M32 20v22M22 24v18M42 24v18" />
+          </svg>
+          {/* Pickaxe-style / hard hat bottom right */}
+          <svg className="floaty float-icon" width="84" height="84" viewBox="0 0 64 64" fill="none"
+            stroke="var(--accent)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
+            style={{ right: 60, bottom: -60 }} aria-hidden="true">
+            <path d="M10 20c10-12 34-12 44 0" />
+            <path d="M32 12v40" />
+            <path d="M24 52h16" />
+            <path d="M12 22c-2 5-1 9 1 13M52 22c2 5 1 9-1 13" />
+          </svg>
+          {/* Haul truck bottom left */}
+          <svg className="floaty2 float-icon" width="84" height="84" viewBox="0 0 64 64" fill="none"
+            stroke="var(--accent-2)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
+            style={{ left: 50, bottom: -60 }} aria-hidden="true">
+            <path d="M8 38h30l8-14h10v14h4v8H8z" />
+            <circle cx="20" cy="48" r="6" fill="#07080B" />
+            <circle cx="46" cy="48" r="6" fill="#07080B" />
+            <path d="M14 38l6-14h18" />
+          </svg>
+
+          {/* Paper card 1 – MMDR Act */}
+          <div className="paper paper-card" style={{ background: '#F1EBDD', transform: 'rotate(-5deg)' }}>
+            <div className="paper-label">CENTRAL ACT</div>
+            <div className="paper-title">MMDR Act, 1957</div>
+            <div className="paper-lines">
+              <span className="paper-line" style={{ width: '100%' }} />
+              <span className="paper-line" style={{ width: '86%' }} />
+              <span className="paper-line" style={{ width: '94%' }} />
+            </div>
+            <div className="paper-highlight" style={{ background: 'color-mix(in srgb, var(--accent) 38%, #F1EBDD)' }}>
+              Sec. 21 · Penalties for illegal mining and transportation
+            </div>
+            <div className="paper-lines" style={{ marginTop: 16 }}>
+              <span className="paper-line" style={{ width: '92%' }} />
+              <span className="paper-line" style={{ width: '70%' }} />
+            </div>
+            <div className="paper-page">p. 18</div>
+            <div className="paper-stamp stamp">VERIFIED</div>
+          </div>
+
+          {/* Paper card 2 – RMMCR */}
+          <div className="paper paper-card" style={{ background: '#EEE7D6', transform: 'rotate(1.5deg) translateY(24px)' }}>
+            <div className="paper-label">STATE RULES</div>
+            <div className="paper-title">RMMCR 2017</div>
+            <div className="paper-lines">
+              <span className="paper-line" style={{ width: '96%' }} />
+              <span className="paper-line" style={{ width: '80%' }} />
+              <span className="paper-line" style={{ width: '90%' }} />
+            </div>
+            <div className="paper-highlight" style={{ background: 'color-mix(in srgb, var(--accent-2) 32%, #EEE7D6)' }}>
+              Minor mineral lease renewal and extension
+            </div>
+            <div className="paper-lines" style={{ marginTop: 16 }}>
+              <span className="paper-line" style={{ width: '88%' }} />
+              <span className="paper-line" style={{ width: '74%' }} />
+            </div>
+            <div className="paper-stamp stamp" style={{ animationDelay: '-2s' }}>VERIFIED</div>
+          </div>
+
+          {/* Paper card 3 – DGMS Safety SOP */}
+          <div className="paper paper-card" style={{ background: '#F4EFE3', transform: 'rotate(5deg)' }}>
+            <div className="paper-label">SAFETY CIRCULAR</div>
+            <div className="paper-title">DGMS Safety SOP</div>
+            <div className="paper-lines">
+              <span className="paper-line" style={{ width: '90%' }} />
+              <span className="paper-line" style={{ width: '100%' }} />
+              <span className="paper-line" style={{ width: '78%' }} />
+            </div>
+            <div className="paper-highlight" style={{ background: 'color-mix(in srgb, var(--accent) 38%, #F4EFE3)' }}>
+              Precautions before open-pit blasting
+            </div>
+            <div className="paper-lines" style={{ marginTop: 16 }}>
+              <span className="paper-line" style={{ width: '84%' }} />
+              <span className="paper-line" style={{ width: '96%' }} />
+            </div>
+            <div className="paper-stamp stamp" style={{ animationDelay: '-4s' }}>VERIFIED</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          AGENTS SECTION
+      ================================================================ */}
+      <section id="agents" className="agents-section">
+        <div className="agents-layout">
+          {/* Intro copy */}
+          <div className="agents-intro">
+            <div className="agents-intro-eyebrow">AI AGENTS</div>
+            <h2 className="agents-intro-h2">
+              Choose an agent and{' '}
+              <span className="section-h2-serif gtext">ask it directly.</span>
+            </h2>
+            <p className="agents-intro-sub">
+              One agent per set of documents, so answers never mix across sources.
             </p>
+          </div>
 
-            <div className="hero-actions">
-              <a href="#agents" className="btn">
-                Choose an agent &rarr;
-              </a>
-              <a href="#demo" className="btn line">
-                Try interactive demo
-              </a>
+          {/* Agent cards */}
+          <div className="agents-cards">
+            {/* Featured – Rajasthan Mining Legal Assistant */}
+            <a href={rajHref} className="agent-featured card-h">
+              <div className="agent-featured-top">
+                <span className="agent-available-badge">
+                  <span className="agent-available-dot pulse" />
+                  AVAILABLE
+                </span>
+                {/* Scales icon */}
+                <svg width="44" height="44" viewBox="0 0 64 64" fill="none"
+                  stroke="var(--accent)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M32 8v44M18 52h28M32 14H14M32 14h18" />
+                  <path d="M14 14L6 32h16z" />
+                  <path d="M50 14l-8 18h16z" />
+                  <path d="M6 32a8 5 0 0 0 16 0M42 32a8 5 0 0 0 16 0" />
+                </svg>
+              </div>
+              <h3 className="agent-featured-name">Rajasthan Mining Legal Assistant</h3>
+              <p className="agent-featured-desc">
+                An AI assistant for exploring Rajasthan mining laws, rules, regulations and related legal documents.
+              </p>
+              <div className="agent-featured-footer">
+                <div className="agent-tags">
+                  {['Rajasthan', 'Mining Law', 'Legal', 'Documents'].map((t) => (
+                    <span key={t} className="agent-tag glass">{t}</span>
+                  ))}
+                </div>
+                <span className="agent-open-btn">
+                  Open agent
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0B0E"
+                    strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </div>
+            </a>
+
+            {/* Coming soon – Mining Safety */}
+            <div className="agent-soon glass card-h">
+              <IconHardHat />
+              <div className="agent-soon-info">
+                <h3 className="agent-soon-name">Mining Safety Assistant</h3>
+                <p className="agent-soon-desc">
+                  Get answers on safety procedures, risk assessments, DGMS guidelines and best operational practices.
+                </p>
+              </div>
+              <span className="agent-soon-badge">COMING SOON</span>
+            </div>
+
+            {/* Coming soon – Mining Operations */}
+            <div className="agent-soon glass card-h">
+              <IconHaulTruck />
+              <div className="agent-soon-info">
+                <h3 className="agent-soon-name">Mining Operations Assistant</h3>
+                <p className="agent-soon-desc">
+                  Support for day-to-day operations, haulage planning, bench extraction and production questions.
+                </p>
+              </div>
+              <span className="agent-soon-badge">COMING SOON</span>
+            </div>
+
+            {/* Coming soon – Mining Documentation */}
+            <div className="agent-soon glass card-h">
+              <IconClipboard />
+              <div className="agent-soon-info">
+                <h3 className="agent-soon-name">Mining Documentation Assistant</h3>
+                <p className="agent-soon-desc">
+                  Help with statutory reports, lease forms, royalty calculation templates and documentation requirements.
+                </p>
+              </div>
+              <span className="agent-soon-badge">COMING SOON</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          FEATURES / WHY MINSO BENTO GRID
+      ================================================================ */}
+      <section id="features" className="features-section">
+        <div className="features-head">
+          <div className="section-eyebrow">BUILT FOR MINING COMPLIANCE</div>
+          <h2 className="section-h2">
+            Why industrial teams rely on{' '}
+            <span className="section-h2-serif gtext">MINSO.AI</span>
+          </h2>
+          <p className="section-sub">
+            Engineered specifically for the complex statutory and operational realities of mining enterprises.
+          </p>
+        </div>
+
+        <div className="features-grid">
+          {/* Wide card 1 – Zero-hallucination */}
+          <div className="feature-card feature-card-wide glass card-h">
+            <div className="feature-card-orb"
+              style={{ right: -60, top: -60, width: 260, height: 260, background: 'color-mix(in srgb, var(--accent) 30%, transparent)' }}
+              aria-hidden="true" />
+            <div style={{ position: 'relative' }}>
+              <span className="feature-icon-wrap"
+                style={{ background: 'color-mix(in srgb, var(--accent) 16%, transparent)' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="var(--accent)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z" />
+                  <path d="M9 12l2.2 2.2L15.5 10" />
+                </svg>
+              </span>
+              <h3 className="feature-h3 feature-h3-wide">Strict zero-hallucination</h3>
+              <p className="feature-p feature-p-wide">
+                If an uploaded mining act or SOP doesn&apos;t explicitly contain the answer, MINSO reports silence rather than fabricating regulatory guidance.
+              </p>
+              <div className="feature-demo-bar">
+                <span className="feature-demo-bar-dot" />
+                I couldn&apos;t find this in the loaded documents.
+              </div>
             </div>
           </div>
 
-          {/* Clean High-Tech Visual Schematic Graphic */}
-          <div className="hero-visual-wrapper">
-            <MiningHeroVisual />
-          </div>
-        </section>
-
-        {/* ================= AI AGENTS 4-CARD GRID ================= */}
-        <section id="agents" className="section-block agents-showcase-section">
-          <div className="section-header">
-            <h2>AI AGENTS</h2>
-            <p className="sub">Choose an agent and ask it directly.</p>
-          </div>
-
-          <div className="showcase-agent-grid">
-            {displayAgents.map(({ agent, isComingSoon }) => (
-              <AgentCard
-                key={agent.id}
-                agent={agent}
-                isComingSoon={isComingSoon}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* ================= INTERACTIVE SIMULATOR ================= */}
-        <section id="demo" className="section-block">
-          <div className="section-header">
-            <span className="section-eyebrow">LIVE CITATION ENGINE</span>
-            <h2>Test Statutory Retrieval in Action</h2>
-            <p className="sub">
-              Select an inquiry to see how MINSO parses complex mining legal frameworks into clause-by-clause verifiable answers.
+          {/* Slim card – Page-accurate grounding */}
+          <div className="feature-card feature-card-slim glass card-h">
+            <span className="feature-icon-wrap" style={{ background: 'rgba(74,222,166,0.12)' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="#4ADEA6" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M7 3h8l4 4v14H7z" />
+                <path d="M15 3v4h4" />
+                <path d="M10 12h6M10 16h6" />
+              </svg>
+            </span>
+            <h3 className="feature-h3 feature-h3-slim">Page-accurate grounding</h3>
+            <p className="feature-p feature-p-slim">
+              Every answer comes with clickable citation chips referencing the exact document title, statutory rule, section, and page number.
             </p>
+            <div className="feature-citation-chips">
+              <span className="feature-citation-chip">Sec. 21 · p. 18</span>
+              <span className="feature-citation-chip">Sec. 21(5) · p. 19</span>
+            </div>
           </div>
 
-          <HomeQuerySimulator />
-        </section>
-
-        {/* ================= VALUE PILLARS / FEATURES ================= */}
-        <section className="section-block">
-          <div className="section-header">
-            <span className="section-eyebrow">BUILT FOR MINING COMPLIANCE</span>
-            <h2>Why Industrial Teams Rely on MINSO.AI</h2>
-            <p className="sub">
-              Engineered specifically for the complex statutory and operational realities of mining enterprises.
+          {/* Slim card – Isolated agent sandboxes */}
+          <div className="feature-card feature-card-slim glass card-h">
+            <span className="feature-icon-wrap"
+              style={{ background: 'color-mix(in srgb, var(--accent-2) 16%, transparent)' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="var(--accent-2)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 3l9 5-9 5-9-5z" />
+                <path d="M3 13l9 5 9-5" />
+              </svg>
+            </span>
+            <h3 className="feature-h3 feature-h3-slim">Isolated agent sandboxes</h3>
+            <p className="feature-p feature-p-slim">
+              Partition lease deeds, DGMS circulars, state concession rules, and internal safety SOPs into dedicated, ring-fenced knowledge agents.
             </p>
+            <div className="feature-sandbox-chips">
+              <span className="feature-sandbox-chip">Lease deeds</span>
+              <span className="feature-sandbox-chip">DGMS</span>
+              <span className="feature-sandbox-chip">SOPs</span>
+            </div>
           </div>
 
-          <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          {/* Wide card 2 – Sub-second lookup */}
+          <div className="feature-card feature-card-wide glass card-h">
+            <div className="feature-card-orb"
+              style={{ left: -60, bottom: -80, width: 280, height: 280, background: 'color-mix(in srgb, var(--accent-2) 28%, transparent)' }}
+              aria-hidden="true" />
+            <div style={{ position: 'relative' }}>
+              <span className="feature-icon-wrap"
+                style={{ background: 'color-mix(in srgb, var(--accent-2) 16%, transparent)' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="var(--accent-2)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M13 2L5 14h6l-1 8 8-12h-6z" />
                 </svg>
-              </div>
-              <h3>Strict Zero-Hallucination</h3>
-              <p>
-                If an uploaded mining act or SOP doesn't explicitly contain the answer, MINSO reports silence rather than fabricating regulatory guidance.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                  <polyline points="10 9 9 9 8 9" />
-                </svg>
-              </div>
-              <h3>Page-Accurate Grounding</h3>
-              <p>
-                Every answer comes with clickable citation chips referencing the exact document title, statutory rule, section, and page number.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
-                  <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
-                  <line x1="6" y1="6" x2="6.01" y2="6" />
-                  <line x1="6" y1="18" x2="6.01" y2="18" />
-                </svg>
-              </div>
-              <h3>Isolated Agent Sandboxes</h3>
-              <p>
-                Partition lease deeds, DGMS circulars, state concession rules, and internal safety SOPs into dedicated, ring-fenced knowledge agents.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 14 14" />
-                </svg>
-              </div>
-              <h3>Sub-Second Statutory Lookup</h3>
-              <p>
+              </span>
+              <h3 className="feature-h3 feature-h3-wide">Sub-second statutory lookup</h3>
+              <p className="feature-p feature-p-wide">
                 Query 500+ page gazettes and concession schedules in milliseconds, cutting down legal compliance research from hours to seconds.
               </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ================= 3-STEP WORKFLOW ================= */}
-        <section className="section-block workflow-section">
-          <div className="section-header">
-            <span className="section-eyebrow">PRECISION PIPELINE</span>
-            <h2>How MINSO Indexes Your Paperwork</h2>
-            <p className="sub">
-              From raw statutory gazette PDFs to verifiable legal intelligence in three automated steps.
-            </p>
-          </div>
-
-          <div className="workflow-steps">
-            <div className="workflow-step">
-              <div className="step-num">01</div>
-              <h4>Ingest & Extract</h4>
-              <p>
-                Upload PDFs of state minor mineral rules, central acts (MMDR 1957), DGMS safety circulars, or internal mine SOPs.
-              </p>
-            </div>
-
-            <div className="workflow-divider">&rarr;</div>
-
-            <div className="workflow-step">
-              <div className="step-num">02</div>
-              <h4>Stratified Chunking</h4>
-              <p>
-                Documents are parsed into semantic chunks that preserve statutory hierarchy, section boundaries, and schedule tables.
-              </p>
-            </div>
-
-            <div className="workflow-divider">&rarr;</div>
-
-            <div className="workflow-step">
-              <div className="step-num">03</div>
-              <h4>Cited Synthesis</h4>
-              <p>
-                Queries execute hybrid vector search to synthesize plain-language answers backed by instant source verification chips.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ================= FINAL CALL-TO-ACTION ================= */}
-        <section className="section-block cta-banner">
-          <div className="cta-inner">
-            <div className="cta-hazard-bar" />
-            <div className="cta-body">
-              <span className="section-eyebrow">START ASKING</span>
-              <h2>Ready to query your mining documentation?</h2>
-              <p>
-                Select an assistant to explore Rajasthan mining laws, DGMS safety SOPs, or internal operational manuals.
-              </p>
-              <div className="cta-buttons">
-                <a href="#agents" className="btn">
-                  Choose an Agent &rarr;
-                </a>
+              <div className="feature-speed-bar-row">
+                <span className="feature-speed-label" style={{ color: '#8C8782' }}>HOURS</span>
+                <div className="feature-speed-track">
+                  <div className="feature-speed-fill bar" />
+                </div>
+                <span className="feature-speed-label" style={{ color: 'var(--accent)' }}>SECONDS</span>
               </div>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
-      {/* Site footer with discreet lock */}
-      <SiteFooter />
-    </>
+      {/* ================================================================
+          CLOSING CTA – night haul-road scene
+      ================================================================ */}
+      <section className="cta-section">
+        <div className="cta-box">
+          <HaulRoadScene />
+          <div className="cta-overlay" aria-hidden="true" />
+          <div className="cta-content">
+            <div className="section-eyebrow">START ASKING</div>
+            <h2 className="cta-h2">
+              Ready to query your{' '}
+              <span className="cta-h2-serif gtext">mining documentation?</span>
+            </h2>
+            <p className="cta-sub" style={{ maxWidth: 640 }}>
+              Select an assistant to explore Rajasthan mining laws, DGMS safety SOPs, or internal operational manuals — or let us build a custom agent tailored specifically to your work or minesite based on your requirements.
+            </p>
+            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', marginTop: 36 }}>
+              <a href="mailto:contact@minso.ai?subject=Custom%20Agent%20Request%20for%20Minesite" className="cta-btn" style={{ marginTop: 0 }}>
+                Create a custom agent for your minesite
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0B0E"
+                  strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </a>
+              <a href="#agents" className="btn-ghost glass" style={{ minHeight: 60, padding: '0 28px', borderRadius: 999, fontSize: 16, fontWeight: 600, display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
+                Explore existing agents
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          FOOTER
+      ================================================================ */}
+      <footer className="home-footer">
+        <div className="home-footer-inner">
+          <div className="home-footer-left">
+            <span className="home-footer-wordmark">
+              MINSO<span className="gtext">.AI</span>
+            </span>
+            <span>Built for a smarter, safer, more efficient mining industry.</span>
+          </div>
+          <a href="/admin" className="home-footer-link">System console</a>
+        </div>
+      </footer>
+
+    </div>
   );
 }
