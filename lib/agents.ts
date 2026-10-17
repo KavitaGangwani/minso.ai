@@ -108,8 +108,22 @@ export async function getAgent(id: string): Promise<Agent | undefined> {
     .maybeSingle();
 
   if (error || !data) {
-    if (id === 'mine-safety-sop') {
-      return {
+    // Fallback seeds — used when the agent row is missing from Supabase
+    const SEED_FALLBACKS: Record<string, Agent> = {
+      'rajasthan-mining-law': {
+        id: 'rajasthan-mining-law',
+        name: 'Rajasthan Mining Legal Assistant',
+        description: 'An AI assistant for exploring Rajasthan mining laws, rules, regulations and related legal documents.',
+        tags: ['Rajasthan', 'Mining Law', 'Legal', 'Documents'],
+        instructions: 'Answer only from the provided sources. Cite the section and page. If unsure, say you don\'t know.',
+        published: true,
+        created_at: new Date().toISOString(),
+        chunk_size: 800,
+        chunk_overlap: 100,
+        top_k: 6,
+        min_score: 0.50,
+      },
+      'mine-safety-sop': {
         id: 'mine-safety-sop',
         name: 'Mine Safety SOP Assistant',
         description: 'Step-by-step safety procedures, DGMS guidelines and worker protocols.',
@@ -121,14 +135,19 @@ export async function getAgent(id: string): Promise<Agent | undefined> {
         chunk_overlap: 100,
         top_k: 6,
         min_score: 0.50,
-      };
-    }
+      },
+    };
+
+    const seed = SEED_FALLBACKS[id];
+    if (seed) return seed;
+
     if (error) console.error(`[Agents] Failed to fetch agent ${id}:`, error);
     return undefined;
   }
 
   return formatAgentRow(data);
 }
+
 
 // Update an agent's fields in the database
 export async function updateAgent(
