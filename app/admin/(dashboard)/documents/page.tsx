@@ -29,55 +29,39 @@ export default async function DocumentsManagementPage() {
       </p>
 
       {/* KPI Stats */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '12px',
-          marginBottom: '24px',
-        }}
-      >
-        <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', padding: '14px', borderRadius: '2px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--mute)', textTransform: 'uppercase' }}>Total Documents</div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: 'var(--ink)', fontFamily: 'var(--font-big-shoulders)' }}>
-            {counts.total}
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--ok)', marginTop: '2px' }}>
-            {counts.indexed} indexed
-          </div>
+      <div className="adm-kpi-grid">
+        <div className="adm-kpi-card">
+          <div className="adm-kpi-label">Total Documents</div>
+          <div className="adm-kpi-val" style={{ color: 'var(--ink)' }}>{counts.total}</div>
+          <div className="adm-kpi-sub" style={{ color: 'var(--ok)' }}>{counts.indexed} indexed in vector DB</div>
         </div>
 
-        <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', padding: '14px', borderRadius: '2px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--mute)', textTransform: 'uppercase' }}>PDF Documents</div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#FFB81C', fontFamily: 'var(--font-big-shoulders)' }}>
-            {counts.pdf}
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '2px' }}>PDF Acts & Manuals</div>
+        <div className="adm-kpi-card">
+          <div className="adm-kpi-label">PDF Documents</div>
+          <div className="adm-kpi-val" style={{ color: 'var(--accent)' }}>{counts.pdf}</div>
+          <div className="adm-kpi-sub">Statutory Acts, Gazettes & Manuals</div>
         </div>
 
-        <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', padding: '14px', borderRadius: '2px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--mute)', textTransform: 'uppercase' }}>Web Links</div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#68B5FF', fontFamily: 'var(--font-big-shoulders)' }}>
-            {counts.url}
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '2px' }}>Scraped URLs</div>
+        <div className="adm-kpi-card">
+          <div className="adm-kpi-label">Web Links</div>
+          <div className="adm-kpi-val" style={{ color: '#68B5FF' }}>{counts.url}</div>
+          <div className="adm-kpi-sub">Scraped Mining Portals & URLs</div>
         </div>
 
-        <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', padding: '14px', borderRadius: '2px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--mute)', textTransform: 'uppercase' }}>Text Documents</div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#5DBB7A', fontFamily: 'var(--font-big-shoulders)' }}>
-            {counts.text}
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '2px' }}>SOPs & Manual Notes</div>
+        <div className="adm-kpi-card">
+          <div className="adm-kpi-label">Text Documents</div>
+          <div className="adm-kpi-val" style={{ color: '#5DBB7A' }}>{counts.text}</div>
+          <div className="adm-kpi-sub">Internal SOPs & Circular Notes</div>
         </div>
       </div>
 
       {/* Document Registry List */}
       <div className="box">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <h3>All Ingested Sources</h3>
-          <Link href="/admin/agents" style={{ color: 'var(--amber)', fontSize: '14px' }}>
-            Go to Agents to add new sources →
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+          <h3 style={{ margin: 0 }}>All Ingested Sources</h3>
+          <Link href="/admin/agents" className="btn line btn-sm btn-inline-action">
+            <span>Go to Agents to add sources</span>
+            <span>&rarr;</span>
           </Link>
         </div>
 

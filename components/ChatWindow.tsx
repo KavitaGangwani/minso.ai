@@ -140,10 +140,6 @@ export default function ChatWindow({ agent }: { agent: Agent }) {
 
   return (
     <div className="chat-root">
-      {/* Ambient background orbs */}
-      <div className="chat-orb chat-orb1" aria-hidden="true" />
-      <div className="chat-orb chat-orb2" aria-hidden="true" />
-
       <div className="chat-layout">
         {/* ── Header ── */}
         <div className="chat-header">

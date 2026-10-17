@@ -106,18 +106,19 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
   };
 
   return (
-    <div style={{ marginTop: '20px', borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+    <div style={{ marginTop: '24px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '20px' }}>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
         <button
           type="button"
           onClick={() => { setActiveTab('pdf'); setErrorMsg(''); setSuccessMsg(''); }}
-          className={`btn line ${activeTab === 'pdf' ? 'tab-active' : ''}`}
+          className="btn line"
           style={{
-            padding: '6px 14px',
+            padding: '8px 16px',
             fontSize: '13px',
-            backgroundColor: activeTab === 'pdf' ? 'var(--panel2)' : 'transparent',
-            borderColor: activeTab === 'pdf' ? 'var(--amber)' : 'var(--line)',
-            color: activeTab === 'pdf' ? 'var(--amber)' : 'var(--mute)',
+            borderRadius: '999px',
+            backgroundColor: activeTab === 'pdf' ? 'color-mix(in srgb, var(--accent) 18%, transparent)' : 'rgba(255, 255, 255, 0.03)',
+            borderColor: activeTab === 'pdf' ? 'var(--accent)' : 'rgba(255, 255, 255, 0.08)',
+            color: activeTab === 'pdf' ? '#F4F1EC' : '#A8A29E',
           }}
         >
           📄 PDF Upload
@@ -126,13 +127,14 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
         <button
           type="button"
           onClick={() => { setActiveTab('url'); setErrorMsg(''); setSuccessMsg(''); }}
-          className={`btn line ${activeTab === 'url' ? 'tab-active' : ''}`}
+          className="btn line"
           style={{
-            padding: '6px 14px',
+            padding: '8px 16px',
             fontSize: '13px',
-            backgroundColor: activeTab === 'url' ? 'var(--panel2)' : 'transparent',
-            borderColor: activeTab === 'url' ? 'var(--amber)' : 'var(--line)',
-            color: activeTab === 'url' ? 'var(--amber)' : 'var(--mute)',
+            borderRadius: '999px',
+            backgroundColor: activeTab === 'url' ? 'color-mix(in srgb, var(--accent) 18%, transparent)' : 'rgba(255, 255, 255, 0.03)',
+            borderColor: activeTab === 'url' ? 'var(--accent)' : 'rgba(255, 255, 255, 0.08)',
+            color: activeTab === 'url' ? '#F4F1EC' : '#A8A29E',
           }}
         >
           🌐 Website Link (URL)
@@ -141,13 +143,14 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
         <button
           type="button"
           onClick={() => { setActiveTab('text'); setErrorMsg(''); setSuccessMsg(''); }}
-          className={`btn line ${activeTab === 'text' ? 'tab-active' : ''}`}
+          className="btn line"
           style={{
-            padding: '6px 14px',
+            padding: '8px 16px',
             fontSize: '13px',
-            backgroundColor: activeTab === 'text' ? 'var(--panel2)' : 'transparent',
-            borderColor: activeTab === 'text' ? 'var(--amber)' : 'var(--line)',
-            color: activeTab === 'text' ? 'var(--amber)' : 'var(--mute)',
+            borderRadius: '999px',
+            backgroundColor: activeTab === 'text' ? 'color-mix(in srgb, var(--accent) 18%, transparent)' : 'rgba(255, 255, 255, 0.03)',
+            borderColor: activeTab === 'text' ? 'var(--accent)' : 'rgba(255, 255, 255, 0.08)',
+            color: activeTab === 'text' ? '#F4F1EC' : '#A8A29E',
           }}
         >
           📝 Plain Text / Notes
@@ -156,8 +159,8 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
 
       {/* PDF Upload Tab */}
       {activeTab === 'pdf' && (
-        <div style={{ background: 'var(--bg)', padding: '14px', border: '1px solid var(--line)', borderRadius: '2px' }}>
-          <p style={{ margin: '0 0 10px 0', fontSize: '14px', color: 'var(--mute)' }}>
+        <div style={{ background: 'rgba(7, 8, 11, 0.55)', padding: '18px', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px' }}>
+          <p style={{ margin: '0 0 14px 0', fontSize: '14px', color: '#A8A29E' }}>
             Upload legal gazettes, mining acts, manuals, or safety procedures in PDF format.
           </p>
           <input
@@ -173,6 +176,7 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
             type="button"
             disabled={isPending}
             onClick={() => fileInputRef.current?.click()}
+            style={{ borderRadius: '999px' }}
           >
             {isPending ? 'Uploading...' : 'Choose PDF File'}
           </button>
@@ -181,17 +185,17 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
 
       {/* Website Link Tab */}
       {activeTab === 'url' && (
-        <form onSubmit={handleWebLinkSubmit} style={{ background: 'var(--bg)', padding: '14px', border: '1px solid var(--line)', borderRadius: '2px' }}>
-          <p style={{ margin: '0 0 10px 0', fontSize: '14px', color: 'var(--mute)' }}>
+        <form onSubmit={handleWebLinkSubmit} style={{ background: 'rgba(7, 8, 11, 0.55)', padding: '18px', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px' }}>
+          <p style={{ margin: '0 0 14px 0', fontSize: '14px', color: '#A8A29E' }}>
             Provide a web page URL. Content will be scraped, structured, and vectorized.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: '10px', alignItems: 'center' }}>
+          <div className="doc-upload-url-grid">
             <input
               type="text"
               placeholder="Title (optional, e.g. Ministry Rules)"
               value={webTitle}
               onChange={(e) => setWebTitle(e.target.value)}
-              style={{ padding: '8px 12px', background: 'var(--panel)', border: '1px solid var(--line)', color: 'var(--ink)' }}
+              style={{ padding: '10px 14px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.09)', borderRadius: '8px', color: '#F4F1EC' }}
             />
             <input
               type="url"
@@ -199,13 +203,13 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
               placeholder="https://example.gov.in/rules/mining-act-2024"
               value={webUrl}
               onChange={(e) => setWebUrl(e.target.value)}
-              style={{ padding: '8px 12px', background: 'var(--panel)', border: '1px solid var(--line)', color: 'var(--ink)' }}
+              style={{ padding: '10px 14px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.09)', borderRadius: '8px', color: '#F4F1EC' }}
             />
             <button
               type="submit"
               className="btn"
               disabled={isPending}
-              style={{ padding: '8px 16px', fontSize: '14px' }}
+              style={{ padding: '10px 20px', fontSize: '14px' }}
             >
               {isPending ? 'Adding...' : 'Add Link'}
             </button>
@@ -215,18 +219,18 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
 
       {/* Plain Text Tab */}
       {activeTab === 'text' && (
-        <form onSubmit={handlePlainTextSubmit} style={{ background: 'var(--bg)', padding: '14px', border: '1px solid var(--line)', borderRadius: '2px' }}>
-          <p style={{ margin: '0 0 10px 0', fontSize: '14px', color: 'var(--mute)' }}>
+        <form onSubmit={handlePlainTextSubmit} style={{ background: 'rgba(7, 8, 11, 0.55)', padding: '18px', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px' }}>
+          <p style={{ margin: '0 0 14px 0', fontSize: '14px', color: '#A8A29E' }}>
             Paste raw regulatory notices, internal guidelines, or SOP procedures directly.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <input
               type="text"
               required
               placeholder="Document Title (e.g. Blasting Safety Checklist)"
               value={textTitle}
               onChange={(e) => setTextTitle(e.target.value)}
-              style={{ padding: '8px 12px', background: 'var(--panel)', border: '1px solid var(--line)', color: 'var(--ink)' }}
+              style={{ padding: '10px 14px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.09)', borderRadius: '8px', color: '#F4F1EC' }}
             />
             <textarea
               required
@@ -234,14 +238,14 @@ export default function DocumentUploadSection({ agentId }: DocumentUploadSection
               placeholder="Paste or write detailed knowledge text here..."
               value={textContent}
               onChange={(e) => setTextContent(e.target.value)}
-              style={{ padding: '10px 12px', background: 'var(--panel)', border: '1px solid var(--line)', color: 'var(--ink)', minHeight: '100px' }}
+              style={{ padding: '12px 14px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.09)', borderRadius: '8px', color: '#F4F1EC', minHeight: '100px' }}
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 type="submit"
                 className="btn"
                 disabled={isPending}
-                style={{ padding: '8px 16px', fontSize: '14px' }}
+                style={{ padding: '10px 22px', fontSize: '14px' }}
               >
                 {isPending ? 'Saving...' : 'Add Text Document'}
               </button>

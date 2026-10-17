@@ -107,7 +107,7 @@ export default function CreateAgentForm() {
               marginBottom: '6px',
             }}
           >
-            Agent Name <span style={{ color: 'var(--amber)' }}>*</span>
+            Agent Name <span style={{ color: 'var(--accent)' }}>*</span>
           </label>
           <input
             id="agent-name"
@@ -120,29 +120,33 @@ export default function CreateAgentForm() {
             style={{
               width: '100%',
               padding: '12px 14px',
-              background: 'var(--bg)',
-              border: '1px solid var(--line)',
-              borderRadius: '2px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.09)',
+              borderRadius: '10px',
+              color: '#F4F1EC',
               fontSize: '15px',
+              outline: 'none',
+              boxSizing: 'border-box',
             }}
           />
           {slug ? (
-            <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '5px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '6px' }}>
               Generated Agent ID:{' '}
               <code
                 style={{
-                  color: 'var(--amber)',
-                  background: 'var(--panel2)',
-                  padding: '2px 6px',
-                  borderRadius: '2px',
-                  fontFamily: 'monospace',
+                  color: 'var(--accent)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  padding: '2px 8px',
+                  borderRadius: '6px',
+                  fontFamily: 'var(--font-jetbrains), monospace',
                 }}
               >
                 {slug}
               </code>
             </div>
           ) : (
-            <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '5px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '6px' }}>
               Agent ID will be auto-generated from name (lowercase, hyphens, alphanumeric).
             </div>
           )}
@@ -173,10 +177,13 @@ export default function CreateAgentForm() {
             style={{
               width: '100%',
               padding: '12px 14px',
-              background: 'var(--bg)',
-              border: '1px solid var(--line)',
-              borderRadius: '2px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.09)',
+              borderRadius: '10px',
+              color: '#F4F1EC',
               fontSize: '15px',
+              outline: 'none',
+              boxSizing: 'border-box',
             }}
           />
         </div>
@@ -206,10 +213,13 @@ export default function CreateAgentForm() {
             style={{
               width: '100%',
               padding: '12px 14px',
-              background: 'var(--bg)',
-              border: '1px solid var(--line)',
-              borderRadius: '2px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.09)',
+              borderRadius: '10px',
+              color: '#F4F1EC',
               fontSize: '15px',
+              outline: 'none',
+              boxSizing: 'border-box',
             }}
           />
           <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '4px' }}>
@@ -230,7 +240,7 @@ export default function CreateAgentForm() {
               marginBottom: '6px',
             }}
           >
-            Prompt Instructions <span style={{ color: 'var(--amber)' }}>*</span>
+            Prompt Instructions <span style={{ color: 'var(--accent)' }}>*</span>
           </label>
           <textarea
             id="agent-instructions"
@@ -242,12 +252,15 @@ export default function CreateAgentForm() {
             style={{
               width: '100%',
               padding: '12px 14px',
-              background: 'var(--bg)',
-              border: '1px solid var(--line)',
-              borderRadius: '2px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.09)',
+              borderRadius: '10px',
+              color: '#F4F1EC',
               fontSize: '14px',
               lineHeight: 1.5,
               minHeight: '100px',
+              outline: 'none',
+              boxSizing: 'border-box',
             }}
           />
           <div style={{ fontSize: '12px', color: 'var(--mute)', marginTop: '4px' }}>
@@ -283,7 +296,7 @@ export default function CreateAgentForm() {
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <button
             type="submit"
             className="btn"

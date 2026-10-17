@@ -79,14 +79,7 @@ export default function AgentChunkingSettingsForm({
       )}
 
       <form onSubmit={handleSave}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '16px',
-            marginBottom: '18px',
-          }}
-        >
+        <div className="settings-form-grid" style={{ gap: '16px', marginBottom: '18px' }}>
           {/* Chunk Size */}
           <div>
             <label

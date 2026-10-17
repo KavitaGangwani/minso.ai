@@ -78,12 +78,10 @@ export default async function QuestionsLogsPage() {
               className="box"
               style={{
                 marginBottom: 0,
-                borderLeft: log.sources_count > 0 ? '4px solid var(--ok)' : '4px solid var(--mute)',
-                background: 'var(--panel)',
-                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+                borderLeft: log.sources_count > 0 ? '3px solid var(--ok)' : '3px solid rgba(255, 255, 255, 0.15)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span
                     style={{
@@ -92,13 +90,14 @@ export default async function QuestionsLogsPage() {
                       fontWeight: 700,
                       letterSpacing: '0.06em',
                       color: 'var(--mute)',
+                      fontFamily: 'var(--font-jetbrains)',
                     }}
                   >
                     Agent:
                   </span>
                   <Link
                     href={`/admin/agents/${log.agent_id}`}
-                    style={{ color: 'var(--amber)', fontWeight: 700, fontSize: '14px' }}
+                    style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '14px' }}
                   >
                     {log.agent_name || log.agent_id}
                   </Link>
@@ -106,46 +105,46 @@ export default async function QuestionsLogsPage() {
                   <span
                     style={{
                       fontSize: '11px',
-                      padding: '2px 8px',
-                      borderRadius: '12px',
+                      padding: '3px 9px',
+                      borderRadius: '999px',
                       fontWeight: 600,
-                      background: log.client_name ? 'rgba(104, 181, 255, 0.12)' : 'rgba(255, 184, 0, 0.1)',
-                      color: log.client_name ? '#68B5FF' : 'var(--amber)',
-                      border: log.client_name ? '1px solid rgba(104, 181, 255, 0.3)' : '1px solid rgba(255, 184, 0, 0.3)',
+                      background: log.client_name ? 'rgba(104, 181, 255, 0.12)' : 'rgba(255, 122, 61, 0.12)',
+                      color: log.client_name ? '#68B5FF' : 'var(--accent)',
+                      border: log.client_name ? '1px solid rgba(104, 181, 255, 0.3)' : '1px solid rgba(255, 122, 61, 0.25)',
                     }}
                   >
                     {log.client_name ? `🏢 Client: ${log.client_name}` : '🌐 Main Website'}
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', fontSize: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', fontSize: '12px', fontFamily: 'var(--font-jetbrains)' }}>
                   <span style={{ color: 'var(--mute)' }}>
-                    Retrieval: <strong>{Math.round(log.retrieval_ms)}ms</strong>
+                    Retrieval: <strong style={{ color: 'var(--ink)' }}>{Math.round(log.retrieval_ms)}ms</strong>
                   </span>
-                  <span style={{ color: 'var(--line)' }}>|</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.15)' }}>|</span>
                   <span style={{ color: 'var(--mute)' }}>
-                    LLM: <strong>{Math.round(log.llm_ms)}ms</strong>
+                    LLM: <strong style={{ color: 'var(--ink)' }}>{Math.round(log.llm_ms)}ms</strong>
                   </span>
-                  <span style={{ color: 'var(--line)' }}>|</span>
-                  <span style={{ color: 'var(--amber)', fontWeight: 700 }}>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.15)' }}>|</span>
+                  <span style={{ color: 'var(--accent)', fontWeight: 700 }}>
                     Total: {Math.round(log.total_ms)}ms
                   </span>
                 </div>
               </div>
 
-              <div style={{ fontSize: '16.5px', fontWeight: 700, color: 'var(--ink)', marginBottom: '10px' }}>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '12px', lineHeight: 1.4 }}>
                 {log.question}
               </div>
 
               <div
                 style={{
-                  fontSize: '14px',
+                  fontSize: '13.5px',
                   color: 'var(--ink)',
-                  background: 'var(--bg)',
-                  padding: '12px 16px',
-                  borderRadius: '2px',
-                  border: '1px solid var(--line)',
-                  lineHeight: 1.55,
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  padding: '14px 16px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  lineHeight: 1.6,
                   marginBottom: '12px',
                   whiteSpace: 'pre-wrap',
                 }}

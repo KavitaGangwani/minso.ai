@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import {
   Bricolage_Grotesque,
   Instrument_Serif,
@@ -6,6 +6,13 @@ import {
   JetBrains_Mono,
 } from 'next/font/google';
 import './globals.css';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#07080B',
+};
 
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],

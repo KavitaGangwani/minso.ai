@@ -292,7 +292,7 @@ export default function ClientDashboardClient({
       <div className="adm-kpi-grid">
         <div className="adm-kpi-card">
           <div className="adm-kpi-label">Active Clients</div>
-          <div className="adm-kpi-val" style={{ color: 'var(--amber)' }}>{clients.length}</div>
+          <div className="adm-kpi-val" style={{ color: 'var(--accent)' }}>{clients.length}</div>
           <div className="adm-kpi-sub">Registered client deployments</div>
         </div>
 

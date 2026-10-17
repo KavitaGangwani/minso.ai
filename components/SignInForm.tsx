@@ -64,12 +64,6 @@ export default function SignInForm() {
 
   return (
     <div className="signin-root">
-      {/* Ambient orbs */}
-      <div className="signin-orb signin-orb1" aria-hidden="true" />
-      <div className="signin-orb signin-orb2" aria-hidden="true" />
-      {/* Subtle grid */}
-      <div className="signin-grid" aria-hidden="true" />
-
       <div className="signin-card">
         {/* Logo + wordmark */}
         <Link href="/" className="signin-logo">
