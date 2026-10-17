@@ -2,7 +2,7 @@ import '@/app/home.css';
 import HeroPit from '@/components/HeroPit';
 import InteractiveDemoWindow from '@/components/InteractiveDemoWindow';
 import HaulRoadScene from '@/components/HaulRoadScene';
-import { getPublishedAgents } from '@/lib/agents';
+import { getAllAgents } from '@/lib/agents';
 import type { Agent } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -42,70 +42,76 @@ function MinerHead({ size = 40 }: { size?: number }) {
 }
 
 // ---------------------------------------------------------------------------
-// Fallback showcase agents (supplement DB results to always have 4 cards)
+// Dynamic SVG Icons for Agent Cards
 // ---------------------------------------------------------------------------
-const MOCK_AGENTS: Agent[] = [
-  {
-    id: 'rajasthan-mining-law',
-    name: 'Rajasthan Mining Legal Assistant',
-    description: 'An AI assistant for exploring Rajasthan mining laws, rules, regulations and related legal documents.',
-    tags: ['Rajasthan', 'Mining Law', 'Legal', 'Documents'],
-    instructions: '', published: true,
-    created_at: new Date().toISOString(),
-    chunk_size: 800, chunk_overlap: 100, top_k: 6, min_score: 0.5,
-  },
-  {
-    id: 'mine-safety-sop',
-    name: 'Mining Safety Assistant',
-    description: 'Get answers on safety procedures, risk assessments, DGMS guidelines and best operational practices.',
-    tags: ['Safety', 'Compliance', 'Procedures'],
-    instructions: '', published: false,
-    created_at: new Date().toISOString(),
-    chunk_size: 800, chunk_overlap: 100, top_k: 6, min_score: 0.5,
-  },
-  {
-    id: 'mining-operations-assistant',
-    name: 'Mining Operations Assistant',
-    description: 'Support for day-to-day operations, haulage planning, bench extraction and production questions.',
-    tags: ['Operations', 'Planning', 'Production'],
-    instructions: '', published: false,
-    created_at: new Date().toISOString(),
-    chunk_size: 800, chunk_overlap: 100, top_k: 6, min_score: 0.5,
-  },
-  {
-    id: 'mining-documentation-assistant',
-    name: 'Mining Documentation Assistant',
-    description: 'Help with statutory reports, lease forms, royalty calculation templates and documentation requirements.',
-    tags: ['Reports', 'Templates', 'Compliance'],
-    instructions: '', published: false,
-    created_at: new Date().toISOString(),
-    chunk_size: 800, chunk_overlap: 100, top_k: 6, min_score: 0.5,
-  },
-];
+function AgentIcon({ text, size = 44 }: { text?: string; size?: number }) {
+  const norm = (text || '').toLowerCase();
+  if (norm.includes('law') || norm.includes('legal') || norm.includes('statut') || norm.includes('rajasthan')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 64 64" fill="none"
+        stroke="var(--accent)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M32 8v44M18 52h28M32 14H14M32 14h18" />
+        <path d="M14 14L6 32h16z" />
+        <path d="M50 14l-8 18h16z" />
+        <path d="M6 32a8 5 0 0 0 16 0M42 32a8 5 0 0 0 16 0" />
+      </svg>
+    );
+  }
+  if (norm.includes('safe') || norm.includes('sop') || norm.includes('hazard') || norm.includes('dgms') || norm.includes('protocol')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 64 64" fill="none" stroke="var(--accent)"
+        strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M8 42a24 22 0 0 1 48 0z" />
+        <path d="M4 42h56v6H4z" />
+        <path d="M32 20v22M22 24v18M42 24v18" />
+      </svg>
+    );
+  }
+  if (norm.includes('operat') || norm.includes('haul') || norm.includes('truck') || norm.includes('fleet') || norm.includes('pit')) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 64 64" fill="none" stroke="var(--accent)"
+        strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M8 38h30l8-14h10v14h4v8H8z" />
+        <circle cx="20" cy="48" r="6" fill="#07080B" />
+        <circle cx="46" cy="48" r="6" fill="#07080B" />
+        <path d="M14 38l6-14h18" />
+      </svg>
+    );
+  }
+  // Default general / ambassador / compliance badge
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" stroke="var(--accent)"
+      strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="14" y="10" width="36" height="46" rx="4" />
+      <path d="M24 6h16v8H24z" />
+      <path d="M22 28h20M22 36h20M22 44h12" />
+    </svg>
+  );
+}
 
-// SVG icons used for the coming-soon agent cards
-function IconHardHat() {
-  return (
-    <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#A8A29E"
-      strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M8 42a24 22 0 0 1 48 0z" />
-      <path d="M4 42h56v6H4z" />
-      <path d="M32 20v22M22 24v18M42 24v18" />
-    </svg>
-  );
-}
-function IconHaulTruck() {
-  return (
-    <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#A8A29E"
-      strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M8 38h30l8-14h10v14h4v8H8z" />
-      <circle cx="20" cy="48" r="6" fill="#07080B" />
-      <circle cx="46" cy="48" r="6" fill="#07080B" />
-      <path d="M14 38l6-14h18" />
-    </svg>
-  );
-}
-function IconClipboard() {
+function ComingSoonIcon({ text }: { text?: string }) {
+  const norm = (text || '').toLowerCase();
+  if (norm.includes('safe') || norm.includes('sop') || norm.includes('hazard') || norm.includes('dgms')) {
+    return (
+      <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#A8A29E"
+        strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M8 42a24 22 0 0 1 48 0z" />
+        <path d="M4 42h56v6H4z" />
+        <path d="M32 20v22M22 24v18M42 24v18" />
+      </svg>
+    );
+  }
+  if (norm.includes('operat') || norm.includes('haul') || norm.includes('truck') || norm.includes('fleet')) {
+    return (
+      <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#A8A29E"
+        strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M8 38h30l8-14h10v14h4v8H8z" />
+        <circle cx="20" cy="48" r="6" fill="#07080B" />
+        <circle cx="46" cy="48" r="6" fill="#07080B" />
+        <path d="M14 38l6-14h18" />
+      </svg>
+    );
+  }
   return (
     <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#A8A29E"
       strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -120,25 +126,9 @@ function IconClipboard() {
 // Home Page
 // ---------------------------------------------------------------------------
 export default async function HomePage() {
-  const publishedAgents = await getPublishedAgents();
-
-  // Merge DB agents with showcase mocks
-  const displayAgents: { agent: Agent; isComingSoon: boolean }[] = [];
-  publishedAgents.forEach((pa) => displayAgents.push({ agent: pa, isComingSoon: false }));
-  MOCK_AGENTS.forEach((mock) => {
-    if (!displayAgents.some((d) => d.agent.id === mock.id) && displayAgents.length < 4) {
-      displayAgents.push({ agent: mock, isComingSoon: !mock.published });
-    }
-  });
-
-  // Determine Rajasthan agent href (real published or fallback)
-  const rajAgent = displayAgents.find((d) => d.agent.id === 'rajasthan-mining-law');
-  const rajHref = rajAgent && !rajAgent.isComingSoon
-    ? `/agents/rajasthan-mining-law`
-    : `/agents/rajasthan-mining-law`;
-
-  // Remaining coming-soon agents
-  const soonAgents = displayAgents.filter((d) => d.isComingSoon);
+  const allAgents = await getAllAgents();
+  const activeAgents = allAgents.filter((a) => a.published);
+  const comingSoonAgents = allAgents.filter((a) => !a.published);
 
   return (
     <div className="home-root">
@@ -359,77 +349,70 @@ export default async function HomePage() {
 
           {/* Agent cards */}
           <div className="agents-cards">
-            {/* Featured – Rajasthan Mining Legal Assistant */}
-            <a href={rajHref} className="agent-featured card-h">
-              <div className="agent-featured-top">
-                <span className="agent-available-badge">
-                  <span className="agent-available-dot pulse" />
-                  AVAILABLE
-                </span>
-                {/* Scales icon */}
-                <svg width="44" height="44" viewBox="0 0 64 64" fill="none"
-                  stroke="var(--accent)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M32 8v44M18 52h28M32 14H14M32 14h18" />
-                  <path d="M14 14L6 32h16z" />
-                  <path d="M50 14l-8 18h16z" />
-                  <path d="M6 32a8 5 0 0 0 16 0M42 32a8 5 0 0 0 16 0" />
-                </svg>
+            {activeAgents.length === 0 && comingSoonAgents.length === 0 && (
+              <div className="agent-soon glass" style={{ textAlign: 'center', justifyContent: 'center', padding: '36px' }}>
+                <p style={{ color: '#A8A29E', margin: 0 }}>No agents configured yet. Add or publish agents via the System Console.</p>
               </div>
-              <h3 className="agent-featured-name">Rajasthan Mining Legal Assistant</h3>
-              <p className="agent-featured-desc">
-                An AI assistant for exploring Rajasthan mining laws, rules, regulations and related legal documents.
-              </p>
-              <div className="agent-featured-footer">
-                <div className="agent-tags">
-                  {['Rajasthan', 'Mining Law', 'Legal', 'Documents'].map((t) => (
-                    <span key={t} className="agent-tag glass">{t}</span>
-                  ))}
+            )}
+
+            {/* Active / Available Agents */}
+            {activeAgents.map((agent) => (
+              <a
+                key={agent.id}
+                href={`/agents/${agent.id}`}
+                className="agent-featured card-h"
+                aria-label={`Open ${agent.name}`}
+              >
+                <div className="agent-featured-top">
+                  <span className="agent-available-badge">
+                    <span className="agent-available-dot pulse" />
+                    AVAILABLE
+                  </span>
+                  <AgentIcon text={`${agent.id} ${agent.name} ${(agent.tags || []).join(' ')}`} />
                 </div>
-                <span className="agent-open-btn">
-                  Open agent
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0B0E"
-                    strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </span>
-              </div>
-            </a>
-
-            {/* Coming soon – Mining Safety */}
-            <div className="agent-soon glass card-h">
-              <IconHardHat />
-              <div className="agent-soon-info">
-                <h3 className="agent-soon-name">Mining Safety Assistant</h3>
-                <p className="agent-soon-desc">
-                  Get answers on safety procedures, risk assessments, DGMS guidelines and best operational practices.
+                <h3 className="agent-featured-name">{agent.name}</h3>
+                <p className="agent-featured-desc">
+                  {agent.description || 'Statutory AI assistant with source-grounded answers.'}
                 </p>
-              </div>
-              <span className="agent-soon-badge">COMING SOON</span>
-            </div>
+                <div className="agent-featured-footer">
+                  {agent.tags && agent.tags.length > 0 && (
+                    <div className="agent-tags">
+                      {agent.tags.map((t) => (
+                        <span key={t} className="agent-tag glass">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                  <span className="agent-open-btn">
+                    Open agent
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0B0E"
+                      strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                </div>
+              </a>
+            ))}
 
-            {/* Coming soon – Mining Operations */}
-            <div className="agent-soon glass card-h">
-              <IconHaulTruck />
-              <div className="agent-soon-info">
-                <h3 className="agent-soon-name">Mining Operations Assistant</h3>
-                <p className="agent-soon-desc">
-                  Support for day-to-day operations, haulage planning, bench extraction and production questions.
-                </p>
+            {/* Coming Soon Agents */}
+            {comingSoonAgents.map((agent) => (
+              <div key={agent.id} className="agent-soon glass card-h">
+                <ComingSoonIcon text={`${agent.id} ${agent.name} ${(agent.tags || []).join(' ')}`} />
+                <div className="agent-soon-info">
+                  <h3 className="agent-soon-name">{agent.name}</h3>
+                  <p className="agent-soon-desc">
+                    {agent.description || 'Knowledge base integration and indexing in progress.'}
+                  </p>
+                  {agent.tags && agent.tags.length > 0 && (
+                    <div className="agent-tags" style={{ marginTop: '8px' }}>
+                      {agent.tags.map((t) => (
+                        <span key={t} className="agent-tag glass" style={{ fontSize: '11px', padding: '3px 8px' }}>{t}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <span className="agent-soon-badge">COMING SOON</span>
               </div>
-              <span className="agent-soon-badge">COMING SOON</span>
-            </div>
-
-            {/* Coming soon – Mining Documentation */}
-            <div className="agent-soon glass card-h">
-              <IconClipboard />
-              <div className="agent-soon-info">
-                <h3 className="agent-soon-name">Mining Documentation Assistant</h3>
-                <p className="agent-soon-desc">
-                  Help with statutory reports, lease forms, royalty calculation templates and documentation requirements.
-                </p>
-              </div>
-              <span className="agent-soon-badge">COMING SOON</span>
-            </div>
+            ))}
           </div>
         </div>
       </section>

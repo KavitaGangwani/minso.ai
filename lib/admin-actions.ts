@@ -31,6 +31,7 @@ export async function signOutAction() {
 // Toggle agent publication status
 export async function togglePublishAction(agentId: string, published: boolean) {
   await updateAgent(agentId, { published });
+  revalidatePath('/');
   revalidatePath('/admin/agents');
   revalidatePath(`/admin/agents/${agentId}`);
   revalidatePath('/agents');
@@ -242,6 +243,7 @@ export async function createAgentAction(prevState: any, formData: FormData) {
       published,
     });
 
+    revalidatePath('/');
     revalidatePath('/admin/agents');
     revalidatePath('/agents');
 
@@ -277,6 +279,7 @@ export async function deleteAgentAction(agentId: string) {
     clearAgentCache(agentId);
 
     // 4. Revalidate paths
+    revalidatePath('/');
     revalidatePath('/admin/agents');
     revalidatePath(`/admin/agents/${agentId}`);
     revalidatePath('/admin/documents');

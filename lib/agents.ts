@@ -47,7 +47,7 @@ export async function getPublishedAgents(): Promise<Agent[]> {
   return (data || []).map(formatAgentRow);
 }
 
-// Get all agents (for admin pages)
+// Get all agents (for admin pages and dynamic homepage)
 export async function getAllAgents(): Promise<Agent[]> {
   const { data, error } = await supabase
     .from('agents')
@@ -56,47 +56,10 @@ export async function getAllAgents(): Promise<Agent[]> {
 
   if (error) {
     console.error('[Agents] Failed to fetch all agents from database:', error);
+    return [];
   }
 
-  const fetched = (data || []).map(formatAgentRow);
-
-  // Guarantee mine-safety-sop exists in admin list if missing from database
-  const defaultSeeds: Agent[] = [
-    {
-      id: 'rajasthan-mining-law',
-      name: 'Rajasthan Mining Law Assistant',
-      description: 'Ask about mining acts, rules and lease procedures in Rajasthan.',
-      tags: ['Law', 'Rajasthan', 'Statutory'],
-      instructions: 'Answer only from the provided sources. Cite the section and page. If unsure, say you don\'t know.',
-      published: true,
-      created_at: new Date().toISOString(),
-      chunk_size: 800,
-      chunk_overlap: 100,
-      top_k: 6,
-      min_score: 0.50,
-    },
-    {
-      id: 'mine-safety-sop',
-      name: 'Mine Safety SOP Assistant',
-      description: 'Step-by-step safety procedures, DGMS guidelines and worker protocols.',
-      tags: ['Safety', 'SOP', 'DGMS'],
-      instructions: 'Answer only from approved SOPs and DGMS regulations. Be brief and list steps in order.',
-      published: false,
-      created_at: new Date().toISOString(),
-      chunk_size: 800,
-      chunk_overlap: 100,
-      top_k: 6,
-      min_score: 0.50,
-    },
-  ];
-
-  for (const seed of defaultSeeds) {
-    if (!fetched.some((a) => a.id === seed.id)) {
-      fetched.push(seed);
-    }
-  }
-
-  return fetched;
+  return (data || []).map(formatAgentRow);
 }
 
 // Get a single agent by ID
